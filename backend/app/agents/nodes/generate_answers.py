@@ -166,6 +166,17 @@ def _profile_value(profile: Dict[str, Any], canonical_key: str) -> Optional[str]
         if entry:
             value = entry.get("school") if canonical_key == "university" else entry.get("degree")
 
+    # A bare "Name" field maps to the old flat full_name column, but a
+    # candidate can fill in first_name/last_name (Personal Information
+    # section) without ever touching full_name — fall back to combining
+    # them, then to preferred/legal name, rather than refusing a field this
+    # trivially answerable.
+    if value is None and canonical_key == "name":
+        first = profile.get("first_name")
+        last = profile.get("last_name")
+        combined = " ".join(p for p in (first, last) if p)
+        value = combined or profile.get("preferred_name") or profile.get("legal_name")
+
     if value is None:
         return None
     if isinstance(value, bool):

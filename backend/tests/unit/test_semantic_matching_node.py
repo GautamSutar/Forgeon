@@ -190,3 +190,40 @@ async def test_keyword_fallback_matches_camelcase_field_names_used_as_labels() -
 
     assert mappings["jobTitle"] == "current_job_title"
     assert mappings["linkedinUrl"] == "linkedin"
+
+
+@pytest.mark.asyncio
+async def test_keyword_fallback_matches_bare_name_field() -> None:
+    """Regression test for a real production incident: a form field simply
+    labeled "Name" was left unmapped and unfilled — the "name" canonical key
+    previously only matched multi-word phrasings ("Full Name", "Your Name",
+    "Candidate Name"), never the bare word by itself."""
+    state = {
+        "extracted_fields": [
+            {"name": "name_field", "label": "Name", "type": "text"},
+            {"name": "name_field_star", "label": "Name *", "type": "text"},
+        ]
+    }
+    result = await semantic_matching_node(state, EmbeddingUnavailableLLM())
+    mappings = result["field_mappings"]
+
+    assert mappings["name_field"] == "name"
+    assert mappings["name_field_star"] == "name"
+
+
+@pytest.mark.asyncio
+async def test_bare_name_fallback_does_not_shadow_more_specific_name_fields() -> None:
+    """Regression guard: the bare "Name" fallback is checked last precisely
+    so it can't hijack "Company Name" / "School Name" / "Employer Name",
+    which must keep resolving to their own more specific canonical keys."""
+    state = {
+        "extracted_fields": [
+            {"name": "company", "label": "Company Name", "type": "text"},
+            {"name": "school", "label": "School Name", "type": "text"},
+        ]
+    }
+    result = await semantic_matching_node(state, EmbeddingUnavailableLLM())
+    mappings = result["field_mappings"]
+
+    assert mappings["company"] == "current_company"
+    assert mappings["school"] == "university"

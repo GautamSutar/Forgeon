@@ -230,6 +230,20 @@ def _keyword_match(label: str) -> Optional[str]:
         for pattern in patterns:
             if pattern in original or pattern in camel_split:
                 return canonical_key
+
+    # Bare "Name" (no more specific qualifier like "Company Name" or "School
+    # Name" — those already matched above via _KEYWORD_PATTERNS) is a very
+    # common standalone field label on real forms. It's checked last, as an
+    # exact-word fallback rather than a substring pattern in the dict above,
+    # specifically so it can never shadow those more specific "...name"
+    # fields — a substring check would have to run before "current_company"
+    # and "university" to catch "Name", but doing so would make it match
+    # "Company Name" / "School Name" first instead.
+    bare = re.sub(r"[*:]", "", original).strip()
+    bare_camel = re.sub(r"[*:]", "", camel_split).strip()
+    if bare == "name" or bare_camel == "name":
+        return "name"
+
     return None
 
 

@@ -170,3 +170,31 @@ async def test_university_and_degree_fall_back_to_education_history() -> None:
 
     assert result["generated_answers"]["school"]["answer"] == "Example Institute of Technology"
     assert result["generated_answers"]["deg"]["answer"] == "B.Tech"
+
+
+@pytest.mark.asyncio
+async def test_bare_name_field_falls_back_to_first_and_last_name() -> None:
+    """Regression test for a real production incident: a plain "Name" field
+    was left unfilled because it maps to the old flat full_name column,
+    while the candidate had only filled first_name/last_name in the Personal
+    Information section of the Profile page."""
+    service = DelayedAnswerService()
+    state = {
+        "extracted_fields": [
+            {"name": "name_field", "label": "Name", "type": "text"},
+        ],
+        "field_mappings": {"name_field": "name"},
+        "profile": {
+            "full_name": None,
+            "first_name": "Jordan",
+            "last_name": "Rivera",
+        },
+        "retrieved_context": [],
+        "job_description": "",
+    }
+
+    result = await generate_answers_node(state, service)
+
+    assert result["generated_answers"]["name_field"]["answer"] == "Jordan Rivera"
+    assert result["generated_answers"]["name_field"]["source"] == "profile"
+    assert service.max_in_flight == 0  # resolved from profile, no LLM call
