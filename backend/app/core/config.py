@@ -60,6 +60,13 @@ class Settings(BaseSettings):
     # FLUX.1-schnell (Apache-2.0) for commercial work.
     HUGGINGFACE_API_KEY: str = ""
     IMAGE_MODEL: str = "black-forest-labs/FLUX.1-dev"
+    # "auto" lets Hugging Face route to whichever backend currently serves
+    # the model (fal, Replicate, WaveSpeed, hf-inference, ...) instead of
+    # hardcoding one — hf-inference itself stopped serving FLUX.1-dev after
+    # this was first wired up, which is exactly the kind of provider churn
+    # "auto" exists to absorb. Pin to a specific provider slug (e.g.
+    # "fal-ai") only if you need predictable pricing/latency.
+    IMAGE_PROVIDER: str = "auto"
     IMAGE_STORAGE_DIR: str = "./storage/images"
     # Cold-starting a large diffusion model on HF can take a while; the
     # request is held open while the model warms up.
