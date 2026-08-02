@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { agentApi, resumeApi } from "@/api/endpoints";
 import type { AgentRunResponse } from "@/api/types";
 import { Badge, Button, Card, ErrorBanner, FieldLabel, PageHeader, Textarea } from "@/components/ui";
+import { PageLoader } from "@/components/PageLoader";
 import { describeError, useAsync } from "@/lib/useAsync";
 
 export default function AgentRunPage() {
@@ -86,7 +87,7 @@ export default function AgentRunPage() {
       </div>
 
       {!runResponse && (
-        <Card className="flex flex-col gap-3">
+        <Card className="relative flex flex-col gap-3">
           <div>
             <FieldLabel htmlFor="html">Form HTML</FieldLabel>
             <Textarea
@@ -128,6 +129,14 @@ export default function AgentRunPage() {
           <Button onClick={handleRun} disabled={running || !html.trim() || !jobDescription.trim()} className="w-fit">
             {running ? "Running…" : "Run agent"}
           </Button>
+
+          {running && (
+            <PageLoader
+              overlay
+              label="Running agent pipeline"
+              sublabel="Extracting fields, matching your profile, and drafting grounded answers. This can take a minute on a free-tier model."
+            />
+          )}
         </Card>
       )}
 

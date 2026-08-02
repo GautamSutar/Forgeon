@@ -4,7 +4,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { applicationApi } from "@/api/endpoints";
 import type { ApplicationStatus } from "@/api/types";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { Badge, Button, Card, ErrorBanner, FieldLabel, Spinner } from "@/components/ui";
+import { Badge, Button, Card, ErrorBanner, FieldLabel } from "@/components/ui";
+import { PageLoader } from "@/components/PageLoader";
 import { describeError, useAsync } from "@/lib/useAsync";
 import { statusTone } from "@/lib/status";
 import { useToast } from "@/lib/toast";
@@ -28,7 +29,7 @@ export default function ApplicationDetailPage() {
   const [deleting, setDeleting] = useState(false);
   const toast = useToast();
 
-  if (loading) return <Spinner />;
+  if (loading) return <PageLoader label="Loading application" />;
   if (error) return <ErrorBanner message={error} />;
   if (!application) return null;
 

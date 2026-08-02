@@ -3,7 +3,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { marketplaceApi } from "@/api/endpoints";
 import type { ChatMessage } from "@/api/types";
 import { AgentIcon } from "@/components/AgentIcon";
-import { Badge, Button, ErrorBanner, Spinner, Textarea } from "@/components/ui";
+import { Badge, Button, ErrorBanner, Textarea } from "@/components/ui";
+import { PageLoader } from "@/components/PageLoader";
 import { describeError, useAsync } from "@/lib/useAsync";
 
 export default function AgentChatPage() {
@@ -30,7 +31,7 @@ export default function AgentChatPage() {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, sending]);
 
-  if (loading) return <Spinner />;
+  if (loading) return <PageLoader label="Loading agent" />;
   if (error) return <ErrorBanner message={error} />;
   if (!agent) return null;
 

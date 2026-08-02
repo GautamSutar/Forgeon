@@ -1,7 +1,8 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { profileApi } from "@/api/endpoints";
 import type { ProfileUpdate } from "@/api/types";
-import { Button, Card, ErrorBanner, FieldLabel, Input, PageHeader, Spinner, Textarea } from "@/components/ui";
+import { Button, Card, ErrorBanner, FieldLabel, Input, PageHeader, Textarea } from "@/components/ui";
+import { PageLoader } from "@/components/PageLoader";
 import { TagListInput } from "@/components/TagListInput";
 import { WorkExperienceEditor } from "@/components/WorkExperienceEditor";
 import { EducationHistoryEditor } from "@/components/EducationHistoryEditor";
@@ -108,7 +109,7 @@ export default function ProfilePage() {
     }
   }, [profile]);
 
-  if (loading) return <Spinner />;
+  if (loading) return <PageLoader label="Loading your profile" />;
   if (error) return <ErrorBanner message={error} />;
 
   function setField<K extends keyof ProfileUpdate>(key: K, value: ProfileUpdate[K]) {
