@@ -1,26 +1,31 @@
 """Text-to-image generation via the Hugging Face Inference Providers.
 
-Defaults to `black-forest-labs/FLUX.1-dev`. Uses `huggingface_hub`'s
-`AsyncInferenceClient` rather than hand-rolled HTTP calls against a router
-URL — Hugging Face has changed the serving details under this model twice in
-one day during development: the legacy `api-inference.huggingface.co` host
-was decommissioned in favor of `router.huggingface.co`, and then `hf-inference`
-(HF's own first-party backend) stopped serving this model in favor of
-third-party providers (fal, Replicate, WaveSpeed). `provider="auto"` asks HF
-to pick whichever backend currently serves the model, so this stops being our
-problem to track — it's the official client library's job to stay current
-with HF's own routing changes, not ours.
+Defaults to `black-forest-labs/FLUX.1-schnell` — Apache-2.0 and ungated, no
+license-acceptance step. `black-forest-labs/FLUX.1-dev` (gated,
+non-commercial license, but higher quality) is available by setting
+``IMAGE_MODEL``.
 
-Three things about this model are worth knowing before wiring it into
-anything user-facing:
+Uses `huggingface_hub`'s `AsyncInferenceClient` rather than hand-rolled HTTP
+calls against a router URL — Hugging Face changed the serving details twice
+in one day during development: the legacy `api-inference.huggingface.co`
+host was decommissioned in favor of `router.huggingface.co`, and then
+`hf-inference` (HF's own first-party backend) stopped serving FLUX.1-dev in
+favor of third-party providers (fal, Replicate, WaveSpeed). `provider="auto"`
+asks HF to pick whichever backend currently serves the model, so this stops
+being our problem to track — it's the official client library's job to stay
+current with HF's own routing changes, not ours.
 
-- **It is gated.** The account behind ``HUGGINGFACE_API_KEY`` must accept the
-  licence at huggingface.co/black-forest-labs/FLUX.1-dev first.
-- **The token needs an explicit permission.** Fine-grained tokens must have
-  "Make calls to Inference Providers" checked, separately from model access —
-  a token can have accepted the license and still be rejected for this.
-- **Its licence is non-commercial.** Use `black-forest-labs/FLUX.1-schnell`
-  (Apache-2.0) for commercial work — set ``IMAGE_MODEL`` to switch.
+Two things are worth knowing before wiring this into anything user-facing:
+
+- **The token needs an explicit permission**, regardless of which model this
+  is set to: fine-grained tokens must have "Make calls to Inference
+  Providers" checked at huggingface.co/settings/tokens. This is separate
+  from — and not granted by — having a valid token or accepting a gated
+  model's license; a token can fail this even against an ungated model.
+- **FLUX.1-dev is gated and non-commercial.** If you switch to it, the
+  account behind ``HUGGINGFACE_API_KEY`` must accept the licence at
+  huggingface.co/black-forest-labs/FLUX.1-dev first, and the license forbids
+  commercial use.
 
 Generated images are written through the existing storage layer, so they
 land on local disk with the same code path as resumes.

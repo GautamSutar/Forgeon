@@ -54,12 +54,13 @@ class Settings(BaseSettings):
 
     # Image generation (Hugging Face Inference API).
     #
-    # FLUX.1-dev is a GATED model: the token's account must first accept the
-    # licence at huggingface.co/black-forest-labs/FLUX.1-dev, otherwise the
-    # API returns 403. Its licence is also non-commercial — use
-    # FLUX.1-schnell (Apache-2.0) for commercial work.
+    # FLUX.1-schnell is Apache-2.0 and ungated — no license-acceptance step,
+    # unlike FLUX.1-dev (gated, non-commercial license). Every token still
+    # needs its own "Make calls to Inference Providers" permission enabled
+    # at huggingface.co/settings/tokens regardless of which model this is
+    # set to — that's a token-level permission, not a per-model one.
     HUGGINGFACE_API_KEY: str = ""
-    IMAGE_MODEL: str = "black-forest-labs/FLUX.1-dev"
+    IMAGE_MODEL: str = "black-forest-labs/FLUX.1-schnell"
     # "auto" lets Hugging Face route to whichever backend currently serves
     # the model (fal, Replicate, WaveSpeed, hf-inference, ...) instead of
     # hardcoding one — hf-inference itself stopped serving FLUX.1-dev after
