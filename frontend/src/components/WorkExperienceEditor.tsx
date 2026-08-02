@@ -38,9 +38,9 @@ export function WorkExperienceEditor({ entries, onChange }: Props) {
   return (
     <div className="flex flex-col gap-4">
       {entries.map((entry, index) => (
-        <div key={index} className="rounded border border-slate-200 p-3">
+        <div key={index} className="rounded border border-line p-3">
           <div className="mb-2 flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-700">Work Experience {index + 1}</span>
+            <span className="text-sm font-medium text-fg-muted">Work Experience {index + 1}</span>
             <button
               type="button"
               onClick={() => remove(index)}
@@ -75,7 +75,7 @@ export function WorkExperienceEditor({ entries, onChange }: Props) {
               />
             </div>
             <div className="flex items-end pb-2">
-              <label className="flex items-center gap-2 text-sm text-slate-700">
+              <label className="flex items-center gap-2 text-sm text-fg-muted">
                 <input
                   type="checkbox"
                   checked={entry.is_current}

@@ -5,6 +5,7 @@ import type { ApplicationStatus } from "@/api/types";
 import { Badge, Button, Card, ErrorBanner, FieldLabel, Spinner } from "@/components/ui";
 import { describeError, useAsync } from "@/lib/useAsync";
 import { statusTone } from "@/lib/status";
+import { useToast } from "@/lib/toast";
 
 const STATUS_OPTIONS: ApplicationStatus[] = [
   "draft",
@@ -21,6 +22,7 @@ export default function ApplicationDetailPage() {
   const { data: application, loading, error, refetch } = useAsync(() => applicationApi.get(id!), [id]);
   const [actionError, setActionError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const toast = useToast();
 
   if (loading) return <Spinner />;
   if (error) return <ErrorBanner message={error} />;
@@ -31,6 +33,7 @@ export default function ApplicationDetailPage() {
     setActionError(null);
     try {
       await applicationApi.update(application!.id, { status });
+      toast.show("Status updated.");
       refetch();
     } catch (err) {
       setActionError(describeError(err));
@@ -51,40 +54,53 @@ export default function ApplicationDetailPage() {
 
   return (
     <div className="max-w-2xl">
-      <button onClick={() => navigate(-1)} className="mb-4 text-sm text-blue-600">
-        ← Back
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-fg-subtle transition-colors hover:text-brand-400"
+      >
+        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back
       </button>
 
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{application.role_title ?? "Untitled role"}</h1>
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <h1 className={`text-2xl font-bold tracking-tight ${application.role_title ? "text-fg" : "italic text-fg-subtle"}`}>
+          {application.role_title ?? "Role not detected"}
+        </h1>
         <Badge tone={statusTone(application.status)}>{application.status.replace("_", " ")}</Badge>
       </div>
 
       <Card className="mb-4">
-        <dl className="grid grid-cols-2 gap-3 text-sm">
+        <dl className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <dt className="text-slate-500">ATS platform</dt>
-            <dd>{application.ats_platform ?? "—"}</dd>
+            <dt className="text-xs font-medium uppercase tracking-wide text-fg-subtle">ATS platform</dt>
+            <dd className="mt-1 capitalize text-fg-muted">{application.ats_platform ?? "—"}</dd>
           </div>
           <div>
-            <dt className="text-slate-500">Source URL</dt>
-            <dd className="truncate">
+            <dt className="text-xs font-medium uppercase tracking-wide text-fg-subtle">Source URL</dt>
+            <dd className="mt-1 truncate">
               {application.source_url ? (
-                <a href={application.source_url} target="_blank" rel="noreferrer" className="text-blue-600">
+                <a
+                  href={application.source_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-brand-400 hover:text-brand-300 hover:underline"
+                >
                   {application.source_url}
                 </a>
               ) : (
-                "—"
+                <span className="text-fg-muted">—</span>
               )}
             </dd>
           </div>
           <div>
-            <dt className="text-slate-500">Created</dt>
-            <dd>{new Date(application.created_at).toLocaleString()}</dd>
+            <dt className="text-xs font-medium uppercase tracking-wide text-fg-subtle">Created</dt>
+            <dd className="mt-1 text-fg-muted">{new Date(application.created_at).toLocaleString()}</dd>
           </div>
           <div>
-            <dt className="text-slate-500">Last updated</dt>
-            <dd>{new Date(application.updated_at).toLocaleString()}</dd>
+            <dt className="text-xs font-medium uppercase tracking-wide text-fg-subtle">Last updated</dt>
+            <dd className="mt-1 text-fg-muted">{new Date(application.updated_at).toLocaleString()}</dd>
           </div>
         </dl>
       </Card>
@@ -96,7 +112,7 @@ export default function ApplicationDetailPage() {
           value={application.status}
           disabled={saving}
           onChange={(e) => handleStatusChange(e.target.value as ApplicationStatus)}
-          className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
+          className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-fg shadow-sm transition-colors hover:border-line-strong focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
         >
           {STATUS_OPTIONS.map((s) => (
             <option key={s} value={s}>
@@ -106,7 +122,11 @@ export default function ApplicationDetailPage() {
         </select>
       </Card>
 
-      {actionError && <ErrorBanner message={actionError} />}
+      {actionError && (
+        <div className="mb-4">
+          <ErrorBanner message={actionError} />
+        </div>
+      )}
 
       <Button variant="danger" onClick={handleDelete}>
         Delete application

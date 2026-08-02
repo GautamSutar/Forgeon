@@ -46,7 +46,13 @@ const handlers: Record<BackgroundRequest["type"], Handler> = {
   RUN_AGENT: async (message) => {
     if (message.type !== "RUN_AGENT") return;
     const client = await buildClient();
-    return client.runAgent(message.html, message.jobDescription, message.resumeId);
+    return client.runAgent(
+      message.html,
+      message.jobDescription,
+      message.resumeId,
+      message.atsPlatform,
+      message.sourceUrl,
+    );
   },
 
   APPROVE_RUN: async (message) => {

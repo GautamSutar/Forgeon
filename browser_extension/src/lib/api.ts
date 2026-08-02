@@ -105,10 +105,22 @@ export class ApiClient {
     return this.request<ResumeSummary[]>("/resumes");
   }
 
-  async runAgent(html: string, jobDescription: string, resumeId?: string): Promise<AgentRunResponse> {
+  async runAgent(
+    html: string,
+    jobDescription: string,
+    resumeId?: string,
+    atsPlatform?: string,
+    sourceUrl?: string,
+  ): Promise<AgentRunResponse> {
     return this.request<AgentRunResponse>("/agent/run", {
       method: "POST",
-      body: { html, job_description: jobDescription, resume_id: resumeId },
+      body: {
+        html,
+        job_description: jobDescription,
+        resume_id: resumeId,
+        ats_platform: atsPlatform,
+        source_url: sourceUrl,
+      },
     });
   }
 

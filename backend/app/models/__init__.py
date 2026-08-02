@@ -8,6 +8,7 @@ from app.models.application_answer import (  # noqa: F401
 from app.models.application_log import ApplicationLog  # noqa: F401
 from app.models.checkpoint import AgentRun  # noqa: F401
 from app.models.company import Company  # noqa: F401
+from app.models.conversation import Conversation, Message, MessageRole  # noqa: F401
 from app.models.embedding import Embedding, EmbeddingSourceType  # noqa: F401
 from app.models.field_alias import FieldAlias  # noqa: F401
 from app.models.human_feedback import HumanFeedback  # noqa: F401
@@ -27,6 +28,9 @@ __all__ = [
     "ApplicationLog",
     "AgentRun",
     "Company",
+    "Conversation",
+    "Message",
+    "MessageRole",
     "Embedding",
     "EmbeddingSourceType",
     "FieldAlias",

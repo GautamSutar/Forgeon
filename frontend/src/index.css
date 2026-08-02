@@ -1,3 +1,149 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  /* Channel triplets (not hex) so Tailwind's <alpha-value> can compose
+     opacities on top of every semantic token. */
+  :root,
+  .dark {
+    --bg: 6 7 12;
+    --bg-elevated: 12 14 22;
+    --surface: 18 21 32;
+    --surface-hover: 26 30 44;
+    --line: 34 39 55;
+    --line-strong: 51 58 79;
+    --fg: 237 241 249;
+    --fg-muted: 155 165 187;
+    --fg-subtle: 108 118 140;
+  }
+
+  .light {
+    --bg: 250 251 253;
+    --bg-elevated: 255 255 255;
+    --surface: 255 255 255;
+    --surface-hover: 244 246 250;
+    --line: 226 231 239;
+    --line-strong: 203 210 224;
+    --fg: 15 20 32;
+    --fg-muted: 84 95 116;
+    --fg-subtle: 125 136 156;
+  }
+
+  html {
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-bg text-fg antialiased;
+  }
+
+  ::selection {
+    background: rgb(53 102 239 / 0.35);
+  }
+
+  /* Consistent focus ring across every interactive element. */
+  :focus-visible {
+    outline: 2px solid rgb(91 141 250);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+@layer components {
+  /* Ambient aurora used behind hero sections and the app shell. */
+  .aurora::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(60rem 34rem at 12% -8%, rgb(30 79 216 / 0.20), transparent 60%),
+      radial-gradient(46rem 30rem at 88% 2%, rgb(139 92 246 / 0.16), transparent 60%),
+      radial-gradient(44rem 30rem at 50% 108%, rgb(63 208 201 / 0.12), transparent 60%);
+  }
+
+  /* Faint engineering grid — reads as "developer tool" without adding noise. */
+  .grid-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgb(var(--line) / 0.5) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--line) / 0.5) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 30%, transparent 75%);
+  }
+
+  .glass {
+    @apply border border-line bg-surface/70 backdrop-blur-xl;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-brand-300 via-violet-300 to-cyan-300 bg-clip-text text-transparent;
+  }
+
+  /* Animated gradient border. The element paints its own border via two
+     backgrounds clipped differently, so it works on any background color. */
+  .gradient-border {
+    background:
+      linear-gradient(rgb(var(--surface)), rgb(var(--surface))) padding-box,
+      linear-gradient(120deg, #1e4fd8, #8b5cf6, #3fd0c9, #1e4fd8) border-box;
+    background-size: 100% 100%, 300% 300%;
+    border: 1px solid transparent;
+    animation: gradient-pan 12s ease infinite;
+  }
+}
+
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  .translate-z-4 {
+    transform: translateZ(1rem);
+  }
+  .translate-z-8 {
+    transform: translateZ(2rem);
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--line-strong));
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(var(--fg-subtle));
+}
+
+/* Honour the OS reduce-motion setting: drop decorative animation, keep the
+   interface fully functional. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

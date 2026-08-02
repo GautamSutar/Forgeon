@@ -41,6 +41,8 @@ async def save_history_node(state: AgentState, db: AsyncSession) -> Dict[str, An
             user_id=user_id,
             resume_id=uuid.UUID(resume_id_raw),
             role_title=state.get("jd_extracted", {}).get("role_title"),
+            ats_platform=state.get("ats_platform"),
+            source_url=state.get("source_url"),
             status=status,
         )
         db.add(application)

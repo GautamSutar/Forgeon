@@ -10,6 +10,7 @@ from app.db.base import Base, TimestampMixin, UUIDPKMixin
 
 if TYPE_CHECKING:
     from app.models.application import Application
+    from app.models.conversation import Conversation
     from app.models.profile import Profile
     from app.models.resume import Resume
     from app.models.saved_answer import SavedAnswer
@@ -30,3 +31,4 @@ class User(UUIDPKMixin, TimestampMixin, Base):
     applications: Mapped[List["Application"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     saved_answers: Mapped[List["SavedAnswer"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     sessions: Mapped[List["AuthSession"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    conversations: Mapped[List["Conversation"]] = relationship(back_populates="user", cascade="all, delete-orphan")

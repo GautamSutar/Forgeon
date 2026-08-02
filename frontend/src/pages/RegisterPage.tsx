@@ -30,46 +30,57 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <Card className="w-96">
-        <h1 className="mb-1 text-lg font-semibold">Create account</h1>
-        <p className="mb-4 text-sm text-slate-500">AI Job Application Agent</p>
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <div>
-            <FieldLabel htmlFor="fullName">Full name</FieldLabel>
-            <Input id="fullName" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="w-full max-w-sm">
+        <div className="mb-6 flex flex-col items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-400 via-brand-500 to-cyan-400 text-white shadow-lg shadow-brand-500/40">
+            <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L20 12l-4.714 2.143L13 21l-2.286-6.857L6 12l4.714-2.143L13 3z" />
+            </svg>
           </div>
-          <div>
-            <FieldLabel htmlFor="email">Email</FieldLabel>
-            <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-          </div>
-          <div>
-            <FieldLabel htmlFor="password">Password</FieldLabel>
-            <Input
-              id="password"
-              type="password"
-              required
-              minLength={8}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
+          <p className="text-sm font-medium text-fg-subtle">Lumini — AI Agent Marketplace</p>
+        </div>
 
-          {error && <ErrorBanner message={error} />}
+        <Card className="shadow-card-hover">
+          <h1 className="mb-1 text-lg font-semibold text-fg">Create account</h1>
+          <p className="mb-5 text-sm text-fg-muted">Get access to every agent in the marketplace</p>
 
-          <Button type="submit" disabled={busy}>
-            {busy ? "Creating account…" : "Create account"}
-          </Button>
-        </form>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+            <div>
+              <FieldLabel htmlFor="fullName">Full name</FieldLabel>
+              <Input id="fullName" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
+            </div>
+            <div>
+              <FieldLabel htmlFor="email">Email</FieldLabel>
+              <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            </div>
+            <div>
+              <FieldLabel htmlFor="password">Password</FieldLabel>
+              <Input
+                id="password"
+                type="password"
+                required
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
 
-        <p className="mt-4 text-center text-sm text-slate-500">
+            {error && <ErrorBanner message={error} />}
+
+            <Button type="submit" disabled={busy} className="mt-1 w-full">
+              {busy ? "Creating account…" : "Create account"}
+            </Button>
+          </form>
+        </Card>
+
+        <p className="mt-5 text-center text-sm text-fg-muted">
           Already have an account?{" "}
-          <Link to="/login" className="font-medium text-blue-600">
+          <Link to="/login" className="font-medium text-brand-400 hover:text-brand-300">
             Sign in
           </Link>
         </p>
-      </Card>
+      </div>
     </div>
   );
 }

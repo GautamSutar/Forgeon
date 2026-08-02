@@ -1,11 +1,12 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { profileApi } from "@/api/endpoints";
 import type { ProfileUpdate } from "@/api/types";
-import { Button, Card, ErrorBanner, FieldLabel, Input, Spinner, Textarea } from "@/components/ui";
+import { Button, Card, ErrorBanner, FieldLabel, Input, PageHeader, Spinner, Textarea } from "@/components/ui";
 import { TagListInput } from "@/components/TagListInput";
 import { WorkExperienceEditor } from "@/components/WorkExperienceEditor";
 import { EducationHistoryEditor } from "@/components/EducationHistoryEditor";
 import { describeError, useAsync } from "@/lib/useAsync";
+import { useToast } from "@/lib/toast";
 
 const FIELD_KEYS: (keyof ProfileUpdate)[] = [
   "full_name",
@@ -95,6 +96,7 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const toast = useToast();
 
   useEffect(() => {
     if (profile) {
@@ -121,6 +123,7 @@ export default function ProfilePage() {
     try {
       await profileApi.update(form);
       setSaved(true);
+      toast.show("Profile saved.");
       refetch();
     } catch (err) {
       setSaveError(describeError(err));
@@ -133,15 +136,14 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="mb-1 text-xl font-semibold">Profile</h1>
-      <p className="mb-4 text-sm text-slate-500">
-        This is what the agent uses to answer static form fields directly, without any AI call — the more you fill
-        in here, the fewer fields it has to guess (or correctly refuse) at application time.
-      </p>
+      <PageHeader
+        title="Profile"
+        subtitle="This is what the agent uses to answer static form fields directly, without any AI call — the more you fill in here, the fewer fields it has to guess (or correctly refuse) at application time."
+      />
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <Card className="flex flex-col gap-4">
-          <h2 className="font-medium text-slate-800">Identity</h2>
+          <h2 className="border-l-2 border-brand-400 pl-2.5 text-sm font-semibold uppercase tracking-wide text-fg-muted">Identity</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <FieldLabel htmlFor="fullName">Full name</FieldLabel>
@@ -181,7 +183,7 @@ export default function ProfilePage() {
         </Card>
 
         <Card className="flex flex-col gap-4">
-          <h2 className="font-medium text-slate-800">Personal information</h2>
+          <h2 className="border-l-2 border-brand-400 pl-2.5 text-sm font-semibold uppercase tracking-wide text-fg-muted">Personal information</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <FieldLabel htmlFor="firstName">First name</FieldLabel>
@@ -256,7 +258,7 @@ export default function ProfilePage() {
         </Card>
 
         <Card className="flex flex-col gap-4">
-          <h2 className="font-medium text-slate-800">Address & alternate contact</h2>
+          <h2 className="border-l-2 border-brand-400 pl-2.5 text-sm font-semibold uppercase tracking-wide text-fg-muted">Address & alternate contact</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <FieldLabel htmlFor="altEmail">Alternate email</FieldLabel>
@@ -323,7 +325,7 @@ export default function ProfilePage() {
         </Card>
 
         <Card className="flex flex-col gap-4">
-          <h2 className="font-medium text-slate-800">Links</h2>
+          <h2 className="border-l-2 border-brand-400 pl-2.5 text-sm font-semibold uppercase tracking-wide text-fg-muted">Links</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <FieldLabel htmlFor="linkedin">LinkedIn URL</FieldLabel>
@@ -409,7 +411,7 @@ export default function ProfilePage() {
         </Card>
 
         <Card className="flex flex-col gap-4">
-          <h2 className="font-medium text-slate-800">Career & education</h2>
+          <h2 className="border-l-2 border-brand-400 pl-2.5 text-sm font-semibold uppercase tracking-wide text-fg-muted">Career & education</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <FieldLabel htmlFor="currentCompany">Current company</FieldLabel>
@@ -535,7 +537,7 @@ export default function ProfilePage() {
               />
             </div>
           </div>
-          <label className="flex items-center gap-2 text-sm text-slate-700">
+          <label className="flex items-center gap-2 text-sm text-fg-muted">
             <input
               type="checkbox"
               checked={form.is_fresher ?? false}
@@ -564,7 +566,7 @@ export default function ProfilePage() {
         </Card>
 
         <Card className="flex flex-col gap-4">
-          <h2 className="font-medium text-slate-800">Work authorization</h2>
+          <h2 className="border-l-2 border-brand-400 pl-2.5 text-sm font-semibold uppercase tracking-wide text-fg-muted">Work authorization</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <FieldLabel htmlFor="passport">Passport number</FieldLabel>
@@ -583,7 +585,7 @@ export default function ProfilePage() {
               />
             </div>
           </div>
-          <label className="flex items-center gap-2 text-sm text-slate-700">
+          <label className="flex items-center gap-2 text-sm text-fg-muted">
             <input
               type="checkbox"
               checked={form.work_authorized ?? false}
@@ -591,7 +593,7 @@ export default function ProfilePage() {
             />
             Legally authorized to work in my current country
           </label>
-          <label className="flex items-center gap-2 text-sm text-slate-700">
+          <label className="flex items-center gap-2 text-sm text-fg-muted">
             <input
               type="checkbox"
               checked={form.requires_visa_sponsorship ?? false}
@@ -602,8 +604,8 @@ export default function ProfilePage() {
         </Card>
 
         <Card className="flex flex-col gap-4">
-          <h2 className="font-medium text-slate-800">Diversity information (optional)</h2>
-          <p className="text-xs text-slate-500">
+          <h2 className="border-l-2 border-brand-400 pl-2.5 text-sm font-semibold uppercase tracking-wide text-fg-muted">Diversity information (optional)</h2>
+          <p className="text-xs text-fg-subtle">
             Entirely voluntary self-identification. The agent only ever uses what you explicitly enter here — it
             never infers or guesses these.
           </p>
@@ -636,7 +638,7 @@ export default function ProfilePage() {
         </Card>
 
         <Card className="flex flex-col gap-4">
-          <h2 className="font-medium text-slate-800">Compensation & logistics</h2>
+          <h2 className="border-l-2 border-brand-400 pl-2.5 text-sm font-semibold uppercase tracking-wide text-fg-muted">Compensation & logistics</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <FieldLabel htmlFor="currentSalary">Current salary</FieldLabel>
@@ -697,7 +699,7 @@ export default function ProfilePage() {
               />
             </div>
           </div>
-          <label className="flex items-center gap-2 text-sm text-slate-700">
+          <label className="flex items-center gap-2 text-sm text-fg-muted">
             <input
               type="checkbox"
               checked={form.willing_to_relocate ?? false}
@@ -705,7 +707,7 @@ export default function ProfilePage() {
             />
             Willing to relocate
           </label>
-          <label className="flex items-center gap-2 text-sm text-slate-700">
+          <label className="flex items-center gap-2 text-sm text-fg-muted">
             <input
               type="checkbox"
               checked={form.immediate_joiner ?? false}
@@ -716,7 +718,7 @@ export default function ProfilePage() {
         </Card>
 
         <Card className="flex flex-col gap-4">
-          <h2 className="font-medium text-slate-800">Preferences</h2>
+          <h2 className="border-l-2 border-brand-400 pl-2.5 text-sm font-semibold uppercase tracking-wide text-fg-muted">Preferences</h2>
           <TagListInput
             label="Preferred roles"
             values={form.preferred_roles ?? []}
@@ -762,8 +764,8 @@ export default function ProfilePage() {
         </Card>
 
         <Card className="flex flex-col gap-4">
-          <h2 className="font-medium text-slate-800">Skills</h2>
-          <p className="text-xs text-slate-500">
+          <h2 className="border-l-2 border-brand-400 pl-2.5 text-sm font-semibold uppercase tracking-wide text-fg-muted">Skills</h2>
+          <p className="text-xs text-fg-subtle">
             Curated by you — distinct from the raw skills auto-extracted from your uploaded resume, which can be
             noisy. This is what the agent presents when a form asks for a skills list.
           </p>
@@ -776,8 +778,8 @@ export default function ProfilePage() {
         </Card>
 
         <Card className="flex flex-col gap-4">
-          <h2 className="font-medium text-slate-800">Websites</h2>
-          <p className="text-xs text-slate-500">Any other relevant links not covered above.</p>
+          <h2 className="border-l-2 border-brand-400 pl-2.5 text-sm font-semibold uppercase tracking-wide text-fg-muted">Websites</h2>
+          <p className="text-xs text-fg-subtle">Any other relevant links not covered above.</p>
           <TagListInput
             label="Websites"
             values={form.websites ?? []}
@@ -787,8 +789,8 @@ export default function ProfilePage() {
         </Card>
 
         <Card className="flex flex-col gap-4">
-          <h2 className="font-medium text-slate-800">Work experience</h2>
-          <p className="text-xs text-slate-500">
+          <h2 className="border-l-2 border-brand-400 pl-2.5 text-sm font-semibold uppercase tracking-wide text-fg-muted">Work experience</h2>
+          <p className="text-xs text-fg-subtle">
             Please provide details of your prior work history / industrial experience here.
           </p>
           <WorkExperienceEditor
@@ -798,8 +800,8 @@ export default function ProfilePage() {
         </Card>
 
         <Card className="flex flex-col gap-4">
-          <h2 className="font-medium text-slate-800">Education</h2>
-          <p className="text-xs text-slate-500">Please provide details of your formal education.</p>
+          <h2 className="border-l-2 border-brand-400 pl-2.5 text-sm font-semibold uppercase tracking-wide text-fg-muted">Education</h2>
+          <p className="text-xs text-fg-subtle">Please provide details of your formal education.</p>
           <EducationHistoryEditor
             entries={form.education_history ?? []}
             onChange={(entries) => setField("education_history", entries)}
@@ -807,8 +809,8 @@ export default function ProfilePage() {
         </Card>
 
         <Card className="flex flex-col gap-4">
-          <h2 className="font-medium text-slate-800">Default cover letter</h2>
-          <p className="text-xs text-slate-500">
+          <h2 className="border-l-2 border-brand-400 pl-2.5 text-sm font-semibold uppercase tracking-wide text-fg-muted">Default cover letter</h2>
+          <p className="text-xs text-fg-subtle">
             Used as grounding context when a form asks for a cover letter — the agent will adapt it rather than
             invent one from nothing.
           </p>
@@ -821,11 +823,22 @@ export default function ProfilePage() {
 
         {saveError && <ErrorBanner message={saveError} />}
 
-        <div className="flex items-center gap-3">
+        <div className="sticky bottom-4 z-10 flex items-center gap-3 rounded-xl border border-line bg-surface/90 p-3 shadow-card-hover backdrop-blur">
           <Button type="submit" disabled={saving}>
             {saving ? "Saving…" : "Save profile"}
           </Button>
-          {saved && <span className="text-sm text-emerald-600">Saved.</span>}
+          {saved && (
+            <span className="flex animate-fade-in-up items-center gap-1.5 text-sm font-medium text-emerald-400">
+              <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  fillRule="evenodd"
+                  d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              Saved
+            </span>
+          )}
         </div>
       </form>
     </div>

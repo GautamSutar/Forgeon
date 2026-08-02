@@ -108,6 +108,39 @@ async def test_agent_approve_resumes_and_submits(client: AsyncClient) -> None:
     assert application.json()["status"] == "submitted"
 
 
+async def test_agent_run_persists_ats_platform_and_source_url(client: AsyncClient) -> None:
+    """Regression test: the browser extension detects the ATS platform and
+    page URL client-side, but the backend previously had no field to accept
+    them, so every saved Application showed "unknown platform" regardless of
+    what was actually detected."""
+    token = await _register_and_login(client, "agent-platform@test.com")
+    await _upload_default_resume(client, token)
+    headers = {"Authorization": f"Bearer {token}"}
+
+    run_resp = await client.post(
+        "/api/v1/agent/run",
+        headers=headers,
+        json={
+            "html": FORM_HTML,
+            "job_description": JOB_DESCRIPTION,
+            "ats_platform": "greenhouse",
+            "source_url": "https://boards.greenhouse.io/acme/jobs/123",
+        },
+    )
+    run_id = run_resp.json()["run_id"]
+
+    approve_resp = await client.post(
+        f"/api/v1/agent/{run_id}/approve",
+        headers=headers,
+        json={"edited_answers": {}},
+    )
+    application_id = approve_resp.json()["application_id"]
+
+    application = await client.get(f"/api/v1/applications/{application_id}", headers=headers)
+    assert application.json()["ats_platform"] == "greenhouse"
+    assert application.json()["source_url"] == "https://boards.greenhouse.io/acme/jobs/123"
+
+
 async def test_agent_reject_never_submits(client: AsyncClient) -> None:
     token = await _register_and_login(client, "agent3@test.com")
     await _upload_default_resume(client, token)

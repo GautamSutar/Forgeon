@@ -1,8 +1,12 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import { CommandPalette } from "@/components/CommandPalette";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import LandingPage from "@/pages/LandingPage";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
+import MarketplacePage from "@/pages/MarketplacePage";
+import AgentChatPage from "@/pages/AgentChatPage";
 import ProfilePage from "@/pages/ProfilePage";
 import ResumesPage from "@/pages/ResumesPage";
 import ApplicationsPage from "@/pages/ApplicationsPage";
@@ -12,27 +16,34 @@ import AgentRunPage from "@/pages/AgentRunPage";
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+    <>
+      {/* Global — Ctrl/Cmd+K works on every route, including the landing page. */}
+      <CommandPalette />
 
-      <Route
-        element={
-          <ProtectedRoute>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="/" element={<Navigate to="/applications" replace />} />
-        <Route path="/applications" element={<ApplicationsPage />} />
-        <Route path="/applications/:id" element={<ApplicationDetailPage />} />
-        <Route path="/agent-run" element={<AgentRunPage />} />
-        <Route path="/resumes" element={<ResumesPage />} />
-        <Route path="/saved-answers" element={<SavedAnswersPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-      </Route>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        <Route
+          element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/agents" element={<MarketplacePage />} />
+          <Route path="/agents/:slug" element={<AgentChatPage />} />
+          <Route path="/applications" element={<ApplicationsPage />} />
+          <Route path="/applications/:id" element={<ApplicationDetailPage />} />
+          <Route path="/agent-run" element={<AgentRunPage />} />
+          <Route path="/resumes" element={<ResumesPage />} />
+          <Route path="/saved-answers" element={<SavedAnswersPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+        </Route>
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   );
 }

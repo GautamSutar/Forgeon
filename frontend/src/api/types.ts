@@ -278,3 +278,52 @@ export interface AgentRunResponse {
   application_id: string | null;
   application_status: string | null;
 }
+
+// --- Agent marketplace ---
+
+export type AgentStatus = "live" | "requires_setup";
+
+export interface AgentCard {
+  slug: string;
+  name: string;
+  tagline: string;
+  description: string;
+  category: string;
+  icon: string;
+  accent: string;
+  capabilities: string[];
+  example_prompts: string[];
+  status: AgentStatus;
+  setup_hint: string | null;
+  route: string | null;
+  creator: string;
+  version: string;
+  /** Static catalog figures, not live telemetry — see backend registry.py. */
+  rating: number;
+  installs: number;
+  tags: string[];
+}
+
+export interface ChatMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  created_at: string;
+}
+
+export interface Conversation {
+  id: string;
+  agent_slug: string;
+  title: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ConversationDetail extends Conversation {
+  messages: ChatMessage[];
+}
+
+export interface ChatResponse {
+  conversation_id: string;
+  message: ChatMessage;
+}

@@ -1,8 +1,8 @@
 <div align="center">
 
-# 🤖 AI Job Application Agent
+# ✨ Lumini
 
-**An AI agent that reads job application forms, fills them from your profile and resume, and only submits after you say so.**
+**An AI agent marketplace — ten specialized agents for the work you actually do, in one dark, fast dashboard.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](backend/pyproject.toml)
@@ -17,19 +17,32 @@
 
 ## What this is
 
-Job hunting means filling the same application form fifty times with slightly
-different wording. This project automates that: a Chrome extension detects a
-job application form on the page, a LangGraph agent maps every field to your
-profile, drafts grounded answers for anything that needs a written response,
-and shows you a full preview — **nothing is filled or submitted until you
-click Approve.**
+Lumini is a marketplace of specialized AI agents. Browse the catalog, open an
+agent, and start working — each one carries its own role, capabilities, and
+honest limits.
+
+| Agent | Does | Status |
+|---|---|---|
+| 🧰 **Job Agent** | Reads a live application form, maps fields to your profile, drafts grounded answers, pauses for approval | Live |
+| 📄 **Resume Agent** | Critiques and tailors resume bullets against a target role | Live |
+| ✉️ **Email Agent** | Drafts, replies, shortens | Live |
+| 🔎 **Research Agent** | Synthesizes documents you provide into structured briefs | Live |
+| 💻 **Coding Agent** | Explains, reviews, refactors, writes tests | Live |
+| 🌍 **Travel Agent** | Builds itineraries and stress-tests them | Live |
+| 📊 **Finance Agent** | Budget math and plain-language explanations | Live |
+| 🖼️ **Image Agent** | Image generation | Needs a provider key |
+| 🎬 **Video Agent** | Scripts and storyboards; generation | Needs a provider key |
+| 📱 **Mobile Agent** | Mobile automation planning; device control | Needs a device bridge |
+
+Agents whose core capability needs an unconfigured provider say so up front
+rather than appearing usable and failing at call time.
 
 Three pieces work together:
 
 | Piece | What it does |
 |---|---|
-| 🧠 **Backend** — FastAPI + LangGraph | Auth, profile/resume storage, RAG over your resume (pgvector), the agent pipeline itself |
-| 🖥️ **Dashboard** — React + TypeScript | Manage your profile, resumes, application history, and saved answers |
+| 🧠 **Backend** — FastAPI + LangGraph | Auth, the agent registry and chat runtime, profile/resume storage, RAG over your resume (pgvector) |
+| 🖥️ **Dashboard** — React + TypeScript | The marketplace, agent chat, and your profile/resumes/history — dark theme, 3D tilt cards |
 | 🧩 **Browser extension** — Chrome MV3 | Detects forms on real ATS pages (Workday, Greenhouse, Lever, LinkedIn, ...), runs the agent, fills the page after you approve |
 
 ## Why it won't hallucinate or auto-submit for you
@@ -95,7 +108,7 @@ docker compose up --build
 ```
 
 - Backend → `http://localhost:8000`
-- Dashboard → `http://localhost:3000`
+- Dashboard → `http://localhost:3000` (marketplace at `/agents`)
 
 For native (hot-reload) setup of each piece individually, see **[RUNNING.md](RUNNING.md)** — it also covers the browser extension, which has to be loaded unpacked into Chrome.
 
@@ -103,7 +116,7 @@ For native (hot-reload) setup of each piece individually, see **[RUNNING.md](RUN
 
 ```
 backend/             FastAPI app, LangGraph agent, Alembic migrations, tests
-frontend/             React dashboard (profile, resumes, applications, saved answers)
+frontend/             React dashboard (marketplace, agent chat, profile, resumes)
 browser_extension/    Chrome MV3 extension (detection, extraction, popup, fill)
 docker-compose.yml     backend + frontend + redis
 RUNNING.md             step-by-step run instructions for every setup

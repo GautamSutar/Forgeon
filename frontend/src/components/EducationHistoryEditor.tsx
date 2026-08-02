@@ -34,9 +34,9 @@ export function EducationHistoryEditor({ entries, onChange }: Props) {
   return (
     <div className="flex flex-col gap-4">
       {entries.map((entry, index) => (
-        <div key={index} className="rounded border border-slate-200 p-3">
+        <div key={index} className="rounded border border-line p-3">
           <div className="mb-2 flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-700">Education {index + 1}</span>
+            <span className="text-sm font-medium text-fg-muted">Education {index + 1}</span>
             <button
               type="button"
               onClick={() => remove(index)}

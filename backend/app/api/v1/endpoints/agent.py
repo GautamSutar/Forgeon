@@ -72,6 +72,8 @@ async def _build_state(
         "resume": resume_dict,
         "html": payload.html,
         "job_description": payload.job_description,
+        "ats_platform": payload.ats_platform,
+        "source_url": payload.source_url,
         "extracted_fields": [],
         "generated_answers": {},
         "retry_count": 0,

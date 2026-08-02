@@ -1,9 +1,13 @@
 import { apiRequest } from "@/api/client";
 import type {
+  AgentCard,
   AgentRunResponse,
   Application,
   ApplicationCreate,
   ApplicationUpdate,
+  ChatResponse,
+  Conversation,
+  ConversationDetail,
   Profile,
   ProfileUpdate,
   Resume,
@@ -80,4 +84,19 @@ export const agentApi = {
     }),
   reject: (runId: string, reason?: string) =>
     apiRequest<AgentRunResponse>(`/agent/${runId}/reject`, { method: "POST", body: { reason } }),
+};
+
+export const marketplaceApi = {
+  listAgents: () => apiRequest<AgentCard[]>("/marketplace/agents", { auth: false }),
+  getAgent: (slug: string) => apiRequest<AgentCard>(`/marketplace/agents/${slug}`, { auth: false }),
+  listConversations: (slug: string) =>
+    apiRequest<Conversation[]>(`/marketplace/agents/${slug}/conversations`),
+  getConversation: (id: string) => apiRequest<ConversationDetail>(`/marketplace/conversations/${id}`),
+  deleteConversation: (id: string) =>
+    apiRequest<void>(`/marketplace/conversations/${id}`, { method: "DELETE" }),
+  chat: (slug: string, message: string, conversationId?: string) =>
+    apiRequest<ChatResponse>(`/marketplace/agents/${slug}/chat`, {
+      method: "POST",
+      body: { message, conversation_id: conversationId },
+    }),
 };

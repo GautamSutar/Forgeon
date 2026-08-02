@@ -75,6 +75,8 @@ export type BackgroundRequest =
       html: string;
       jobDescription: string;
       resumeId?: string;
+      atsPlatform?: AtsPlatform;
+      sourceUrl?: string;
     }
   | { type: "APPROVE_RUN"; runId: string; editedAnswers: Record<string, string> }
   | { type: "REJECT_RUN"; runId: string; reason?: string };

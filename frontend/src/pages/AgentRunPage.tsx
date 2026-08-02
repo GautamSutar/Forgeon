@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { agentApi, resumeApi } from "@/api/endpoints";
 import type { AgentRunResponse } from "@/api/types";
-import { Badge, Button, Card, ErrorBanner, FieldLabel, Textarea } from "@/components/ui";
+import { Badge, Button, Card, ErrorBanner, FieldLabel, PageHeader, Textarea } from "@/components/ui";
 import { describeError, useAsync } from "@/lib/useAsync";
 
 export default function AgentRunPage() {
@@ -63,9 +63,17 @@ export default function AgentRunPage() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="mb-1 text-xl font-semibold">Test Agent — Developer Tool</h1>
+      <PageHeader title="Test Agent" subtitle="Developer tool — exercises the backend pipeline directly." />
 
-      <div className="mb-4 rounded border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+      <div className="mb-4 flex gap-2.5 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-200">
+        <svg className="mt-0.5 h-4 w-4 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+          <path
+            fillRule="evenodd"
+            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l6.28 11.18c.75 1.334-.213 2.987-1.742 2.987H3.72c-1.53 0-2.492-1.653-1.743-2.987l6.28-11.18zM10 6a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 6zm0 8a1 1 0 100-2 1 1 0 000 2z"
+            clipRule="evenodd"
+          />
+        </svg>
+        <div>
         <p className="font-medium">This is not how you apply to real jobs.</p>
         <p className="mt-1">
           For actual job applications, use the <span className="font-medium">browser extension</span> on a real job
@@ -74,6 +82,7 @@ export default function AgentRunPage() {
           extension or a real browser tab. Paste raw form HTML below and nothing gets filled into any actual
           page — it just exercises the same approve/reject flow the extension uses.
         </p>
+        </div>
       </div>
 
       {!runResponse && (
@@ -104,7 +113,7 @@ export default function AgentRunPage() {
                 id="resume"
                 value={resumeId ?? ""}
                 onChange={(e) => setResumeId(e.target.value || undefined)}
-                className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
+                className="w-full rounded border border-line-strong px-3 py-2 text-sm"
               >
                 <option value="">Default resume</option>
                 {resumes.map((r) => (
@@ -127,7 +136,7 @@ export default function AgentRunPage() {
           <h2 className="font-medium">Review generated answers</h2>
 
           {preview.validation_errors.length > 0 && (
-            <div className="rounded border border-amber-300 bg-amber-50 p-2 text-xs text-amber-800">
+            <div className="rounded border border-amber-500/30 bg-amber-500/10 p-2 text-xs text-amber-200">
               <p className="font-medium">Validation warnings:</p>
               <ul className="list-disc pl-4">
                 {preview.validation_errors.map((e) => (
@@ -139,9 +148,9 @@ export default function AgentRunPage() {
 
           <div className="flex flex-col gap-3">
             {Object.entries(preview.answers).map(([fieldKey, entry]) => (
-              <div key={fieldKey} className="rounded border border-slate-200 p-2">
+              <div key={fieldKey} className="rounded border border-line p-2">
                 <div className="mb-1 flex items-center justify-between">
-                  <span className="text-xs font-medium text-slate-700">{fieldKey}</span>
+                  <span className="text-xs font-medium text-fg-muted">{fieldKey}</span>
                   <Badge tone={entry.refused ? "amber" : entry.source === "profile" ? "green" : "blue"}>
                     {entry.refused ? "refused" : entry.source}
                   </Badge>

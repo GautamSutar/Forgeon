@@ -14,6 +14,8 @@ class AgentState(TypedDict, total=False):
     resume: Dict[str, Any]
     html: str
     job_description: str
+    ats_platform: Optional[str]
+    source_url: Optional[str]
 
     # Working data
     extracted_fields: List[Dict[str, Any]]

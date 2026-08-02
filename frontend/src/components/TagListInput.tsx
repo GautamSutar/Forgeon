@@ -38,7 +38,7 @@ export function TagListInput({ label, values, onChange, placeholder }: Props) {
 
   return (
     <div>
-      <span className="mb-1 block text-sm font-medium text-slate-700">{label}</span>
+      <span className="mb-1 block text-sm font-medium text-fg-muted">{label}</span>
       {values.length > 0 && (
         <div className="mb-2 flex flex-wrap gap-1">
           {values.map((value) => (
@@ -68,7 +68,7 @@ export function TagListInput({ label, values, onChange, placeholder }: Props) {
         <button
           type="button"
           onClick={commit}
-          className="shrink-0 rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"
+          className="shrink-0 rounded border border-line-strong px-3 py-2 text-sm text-fg-muted hover:bg-surface-hover"
         >
           Add
         </button>

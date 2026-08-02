@@ -91,6 +91,8 @@ export default function App() {
         html: extractedForm.html,
         jobDescription,
         resumeId: selectedResumeId,
+        atsPlatform: extractedForm.platform,
+        sourceUrl: extractedForm.url,
       });
       setRunResponse(response);
       setEditedAnswers({});
