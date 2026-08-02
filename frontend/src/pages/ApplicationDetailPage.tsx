@@ -1,7 +1,9 @@
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { applicationApi } from "@/api/endpoints";
 import type { ApplicationStatus } from "@/api/types";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { Badge, Button, Card, ErrorBanner, FieldLabel, Spinner } from "@/components/ui";
 import { describeError, useAsync } from "@/lib/useAsync";
 import { statusTone } from "@/lib/status";
@@ -22,6 +24,8 @@ export default function ApplicationDetailPage() {
   const { data: application, loading, error, refetch } = useAsync(() => applicationApi.get(id!), [id]);
   const [actionError, setActionError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const toast = useToast();
 
   if (loading) return <Spinner />;
@@ -43,12 +47,15 @@ export default function ApplicationDetailPage() {
   }
 
   async function handleDelete() {
-    if (!confirm("Delete this application record? This cannot be undone.")) return;
+    setDeleting(true);
     try {
       await applicationApi.remove(application!.id);
       navigate("/applications");
     } catch (err) {
       setActionError(describeError(err));
+      setConfirmOpen(false);
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -128,9 +135,26 @@ export default function ApplicationDetailPage() {
         </div>
       )}
 
-      <Button variant="danger" onClick={handleDelete}>
+      <Button variant="danger" onClick={() => setConfirmOpen(true)}>
+        <Trash2 className="h-4 w-4" />
         Delete application
       </Button>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title="Delete this application?"
+        description={
+          <>
+            <span className="font-medium text-fg">
+              {application.role_title ?? "Role not detected"}
+            </span>{" "}
+            and its saved answers will be permanently removed. This cannot be undone.
+          </>
+        }
+        busy={deleting}
+        onConfirm={handleDelete}
+      />
     </div>
   );
 }

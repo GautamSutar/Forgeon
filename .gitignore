@@ -91,3 +91,7 @@ desktop.ini
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Windows reserved device name — Git Bash turns `-o /dev/null` into a literal
+# `nul` file that git cannot index.
+nul
