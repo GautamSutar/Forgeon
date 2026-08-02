@@ -300,31 +300,42 @@ AGENTS: List[AgentSpec] = [
         name="Image Agent",
         rating=4.3,
         installs=8890,
-        tags=["Generation","Design","Prompting"],
-        tagline="Generate and edit images",
+        tags=["Generation","Design","FLUX"],
+        tagline="Generate images with FLUX.1-dev",
         description=(
-            "Generates images from a prompt and iterates on them. Needs an image "
-            "generation provider configured before it can run."
+            "Generates an image from your prompt using black-forest-labs/FLUX.1-dev "
+            "via the Hugging Face Inference API. Every message is treated as a "
+            "prompt — send a new message to generate a new image."
         ),
         category="Creative",
         icon="image",
         accent="#ec4899",
         capabilities=[
-            "Generates images from a text prompt",
-            "Iterates on a generated image",
-            "Writes and refines prompts for image models",
+            "Generates images from a text prompt with FLUX.1-dev",
+            "Runs on the Hugging Face Inference API",
+            "Serves each generation back as a downloadable image",
         ],
-        example_prompts=["Generate a minimal logo for a coffee brand."],
+        example_prompts=[
+            "A minimal geometric logo for a coffee brand, flat vector style.",
+            "A cozy reading nook by a rainy window, warm lighting, watercolor.",
+        ],
         status="requires_setup",
         setup_hint=(
-            "Set an image generation provider key (e.g. OPENAI_API_KEY for "
-            "DALL·E, or a Stability/Replicate key) in backend/.env. The "
-            "currently configured chat provider does not serve image generation."
+            "Set HUGGINGFACE_API_KEY in backend/.env, using a token from an "
+            "account that has accepted FLUX.1-dev's license at "
+            "huggingface.co/black-forest-labs/FLUX.1-dev (it's a gated model — "
+            "requests 403 until the license is accepted). Note the license is "
+            "non-commercial; set IMAGE_MODEL=black-forest-labs/FLUX.1-schnell "
+            "instead for commercial use."
         ),
+        # Not used for the "image" slug — chat_with_agent routes every message
+        # straight to ImageGenerationService instead of the chat LLM, since a
+        # prompt here means "render this," not "answer this." Kept accurate
+        # anyway in case anything ever reads it directly.
         system_prompt=(
-            "You are Lumini's Image Agent. Until an image generation provider is "
-            "configured you cannot produce images, but you can help the user "
-            "write and refine strong prompts for image models. " + _GROUNDING_RULES + _FORMATTING_RULES
+            "You are Lumini's Image Agent. You generate images with FLUX.1-dev "
+            "from the user's prompt via the Hugging Face Inference API. "
+            + _GROUNDING_RULES + _FORMATTING_RULES
         ),
     ),
     AgentSpec(

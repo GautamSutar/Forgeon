@@ -2,6 +2,7 @@ import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { AuthedImage } from "@/components/AuthedImage";
 import { cn } from "@/lib/cn";
 
 /**
@@ -63,6 +64,11 @@ export function Markdown({ content, className }: { content: string; className?: 
           ),
 
           hr: () => <hr className="my-4 border-line" />,
+
+          // Generated images come back as standard markdown ![alt](src).
+          // The image-serving endpoint requires an Authorization header a
+          // plain <img> can't send, so route it through AuthedImage instead.
+          img: ({ src, alt }) => <AuthedImage src={String(src ?? "")} alt={alt} />,
 
           code: ({ className: cls, children }) => {
             // react-markdown only sets a `language-*` class on fenced blocks,

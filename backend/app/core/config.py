@@ -51,6 +51,19 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
     OPENROUTER_API_KEY: str = ""
+
+    # Image generation (Hugging Face Inference API).
+    #
+    # FLUX.1-dev is a GATED model: the token's account must first accept the
+    # licence at huggingface.co/black-forest-labs/FLUX.1-dev, otherwise the
+    # API returns 403. Its licence is also non-commercial — use
+    # FLUX.1-schnell (Apache-2.0) for commercial work.
+    HUGGINGFACE_API_KEY: str = ""
+    IMAGE_MODEL: str = "black-forest-labs/FLUX.1-dev"
+    IMAGE_STORAGE_DIR: str = "./storage/images"
+    # Cold-starting a large diffusion model on HF can take a while; the
+    # request is held open while the model warms up.
+    IMAGE_TIMEOUT_SECONDS: int = 180
     EMBEDDING_MODEL: str = "text-embedding-3-small"
     EMBEDDING_DIMENSIONS: int = 1536
 

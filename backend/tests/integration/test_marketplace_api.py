@@ -2,8 +2,13 @@
 the ownership boundary between users."""
 from __future__ import annotations
 
+from unittest.mock import AsyncMock, patch
+
 import pytest
 from httpx import AsyncClient
+
+from app.core.config import settings
+from app.services.image_generation_service import GeneratedImage
 
 pytestmark = pytest.mark.asyncio
 
@@ -41,6 +46,73 @@ async def test_agents_requiring_setup_declare_it_with_a_hint(client: AsyncClient
         assert by_slug[slug]["setup_hint"]
 
     assert by_slug["job"]["status"] == "live"
+
+
+async def test_image_agent_reports_live_once_configured(client: AsyncClient) -> None:
+    """The catalog's `status` for the image agent isn't a static flag — it
+    tracks whether HUGGINGFACE_API_KEY is actually set, so the marketplace
+    can't lie about an agent being usable."""
+    original = settings.HUGGINGFACE_API_KEY
+    settings.HUGGINGFACE_API_KEY = "hf_fake_token_for_test"
+    try:
+        resp = await client.get("/api/v1/marketplace/agents/image")
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["status"] == "live"
+        assert body["setup_hint"] is None
+    finally:
+        settings.HUGGINGFACE_API_KEY = original
+
+
+async def test_image_agent_chat_generates_instead_of_conversing(client: AsyncClient) -> None:
+    """A message to the image agent is a generation prompt, not a question —
+    it must route to ImageGenerationService, never to the chat LLM."""
+    token = await _register_and_login(client, "image-agent@test.com")
+    headers = {"Authorization": f"Bearer {token}"}
+
+    fake_image = GeneratedImage(
+        url="/api/v1/images/fake-user/fake-file.png",
+        prompt="a minimal coffee logo",
+        model="black-forest-labs/FLUX.1-dev",
+    )
+    with patch(
+        "app.services.agent_chat_service.ImageGenerationService.generate",
+        new=AsyncMock(return_value=fake_image),
+    ):
+        resp = await client.post(
+            "/api/v1/marketplace/agents/image/chat",
+            headers=headers,
+            json={"message": "a minimal coffee logo"},
+        )
+
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["message"]["role"] == "assistant"
+    assert "fake-file.png" in body["message"]["content"]
+    assert "black-forest-labs/FLUX.1-dev" in body["message"]["content"]
+
+    detail = await client.get(
+        f"/api/v1/marketplace/conversations/{body['conversation_id']}", headers=headers
+    )
+    messages = detail.json()["messages"]
+    assert messages[0]["role"] == "user"
+    assert messages[0]["content"] == "a minimal coffee logo"
+
+
+async def test_image_agent_chat_surfaces_generation_failure_in_transcript(client: AsyncClient) -> None:
+    """When HUGGINGFACE_API_KEY isn't configured (the default in tests), the
+    failure must show up as an assistant reply the user can read — not a
+    500, and not a silently empty response."""
+    token = await _register_and_login(client, "image-agent-fail@test.com")
+    headers = {"Authorization": f"Bearer {token}"}
+
+    resp = await client.post(
+        "/api/v1/marketplace/agents/image/chat",
+        headers=headers,
+        json={"message": "a minimal coffee logo"},
+    )
+    assert resp.status_code == 200
+    assert "HUGGINGFACE_API_KEY" in resp.json()["message"]["content"]
 
 
 async def test_unknown_agent_slug_404s(client: AsyncClient) -> None:

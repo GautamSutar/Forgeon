@@ -25,15 +25,26 @@ from app.schemas.marketplace import (
     MessageRead,
 )
 from app.services.agent_chat_service import AgentChatService
+from app.services.image_generation_service import is_configured as image_is_configured
 
 router = APIRouter(prefix="/marketplace", tags=["marketplace"])
+
+
+def _card(spec) -> AgentCard:
+    """Builds the listing, resolving any status that depends on runtime
+    configuration rather than the static registry."""
+    card = AgentCard(**vars(spec))
+    if spec.slug == "image" and image_is_configured():
+        card.status = "live"
+        card.setup_hint = None
+    return card
 
 
 @router.get("/agents", response_model=List[AgentCard])
 async def browse_agents() -> List[AgentCard]:
     """The marketplace catalog. Public-shaped data, but still auth-free so the
     grid can render before the user has a session."""
-    return [AgentCard(**vars(spec)) for spec in list_agents()]
+    return [_card(spec) for spec in list_agents()]
 
 
 @router.get("/agents/{slug}", response_model=AgentCard)
@@ -41,7 +52,7 @@ async def get_agent_detail(slug: str) -> AgentCard:
     spec = get_agent(slug)
     if spec is None:
         raise NotFoundError(f"No agent named '{slug}'")
-    return AgentCard(**vars(spec))
+    return _card(spec)
 
 
 @router.get("/agents/{slug}/conversations", response_model=List[ConversationRead])
@@ -110,7 +121,17 @@ async def chat_with_agent(
         await db.flush()
 
     service = AgentChatService(db, llm_client)
-    reply = await service.send(agent=spec, conversation=conversation, user_message=payload.message)
+    if slug == "image":
+        # For the image agent every message is a generation prompt, not a
+        # question — routing it through the chat LLM would just describe an
+        # image instead of producing one.
+        reply = await service.send_image_prompt(
+            conversation=conversation, prompt=payload.message, user_id=current_user.id
+        )
+    else:
+        reply = await service.send(
+            agent=spec, conversation=conversation, user_message=payload.message
+        )
 
     return ChatResponse(
         conversation_id=conversation.id,

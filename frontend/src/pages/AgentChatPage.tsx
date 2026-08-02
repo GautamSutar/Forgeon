@@ -170,7 +170,13 @@ export default function AgentChatPage() {
           {messages.map((m) => (
             <MessageBubble key={m.id} message={m} accent={agent.accent} icon={agent.icon} />
           ))}
-          {sending && <TypingIndicator accent={agent.accent} icon={agent.icon} />}
+          {sending && (
+            <TypingIndicator
+              accent={agent.accent}
+              icon={agent.icon}
+              note={agent.slug === "image" ? "Generating — can take up to a minute on a cold model…" : undefined}
+            />
+          )}
         </div>
         <div ref={endRef} />
       </div>
@@ -194,7 +200,7 @@ export default function AgentChatPage() {
               void send(draft);
             }
           }}
-          placeholder={`Message ${agent.name}…`}
+          placeholder={agent.slug === "image" ? "Describe the image to generate…" : `Message ${agent.name}…`}
           className="resize-none"
         />
         <Button onClick={() => void send(draft)} disabled={sending || !draft.trim()} className="h-[42px]">
@@ -240,7 +246,7 @@ function MessageBubble({ message, accent, icon }: { message: ChatMessage; accent
   );
 }
 
-function TypingIndicator({ accent, icon }: { accent: string; icon: string }) {
+function TypingIndicator({ accent, icon, note }: { accent: string; icon: string; note?: string }) {
   return (
     <div className="flex animate-fade-in-up gap-3">
       <div
@@ -249,14 +255,17 @@ function TypingIndicator({ accent, icon }: { accent: string; icon: string }) {
       >
         <AgentIcon name={icon} className="h-4 w-4" />
       </div>
-      <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-sm border border-line bg-surface px-4 py-3">
-        {[0, 150, 300].map((delay) => (
-          <span
-            key={delay}
-            className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-500"
-            style={{ animationDelay: `${delay}ms` }}
-          />
-        ))}
+      <div className="flex items-center gap-2.5 rounded-2xl rounded-tl-sm border border-line bg-surface px-4 py-3">
+        <div className="flex items-center gap-1.5">
+          {[0, 150, 300].map((delay) => (
+            <span
+              key={delay}
+              className="h-1.5 w-1.5 animate-bounce rounded-full bg-fg-subtle"
+              style={{ animationDelay: `${delay}ms` }}
+            />
+          ))}
+        </div>
+        {note && <span className="text-xs text-fg-subtle">{note}</span>}
       </div>
     </div>
   );

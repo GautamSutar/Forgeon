@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.agents.registry import AgentSpec
 from app.llm.client import LLMClient
 from app.models.conversation import Conversation, Message, MessageRole
+from app.services.image_generation_service import ImageGenerationError, ImageGenerationService
 
 logger = logging.getLogger("app.services.agent_chat")
 
@@ -75,6 +76,44 @@ class AgentChatService:
         # of "New chat".
         if conversation.title == "New chat":
             conversation.title = user_message[:60] + ("…" if len(user_message) > 60 else "")
+
+        await self.db.flush()
+        return reply
+
+    async def send_image_prompt(
+        self, *, conversation: Conversation, prompt: str, user_id
+    ) -> Message:
+        """Image-agent turn: the message *is* the prompt, and the reply is the
+        rendered image.
+
+        The result is stored as markdown so it round-trips through the normal
+        conversation history and renders with the same pipeline as any other
+        reply — no separate attachment table or column needed.
+        """
+        self.db.add(
+            Message(conversation_id=conversation.id, role=MessageRole.USER, content=prompt)
+        )
+        await self.db.flush()
+
+        service = ImageGenerationService()
+        try:
+            image = await service.generate(prompt, user_id=user_id)
+            content = f"![{prompt}]({image.url})\n\nGenerated with `{image.model}`."
+        except ImageGenerationError as exc:
+            # Surfaced as an assistant turn, so the failure stays visible in
+            # the transcript instead of vanishing into a toast.
+            content = str(exc)
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.warning("Unexpected image generation failure: %s", exc)
+            content = "Image generation failed unexpectedly. Check the backend logs."
+
+        reply = Message(
+            conversation_id=conversation.id, role=MessageRole.ASSISTANT, content=content
+        )
+        self.db.add(reply)
+
+        if conversation.title == "New chat":
+            conversation.title = prompt[:60] + ("…" if len(prompt) > 60 else "")
 
         await self.db.flush()
         return reply

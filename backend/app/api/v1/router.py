@@ -6,6 +6,7 @@ from app.api.v1.endpoints import (
     agent,
     applications,
     auth,
+    images,
     marketplace,
     profiles,
     resumes,
@@ -20,3 +21,4 @@ api_router.include_router(applications.router)
 api_router.include_router(saved_answers.router)
 api_router.include_router(agent.router)
 api_router.include_router(marketplace.router)
+api_router.include_router(images.router)
