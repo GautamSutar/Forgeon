@@ -77,6 +77,37 @@ async def test_generate_explains_gated_model_403() -> None:
 
 
 @pytest.mark.asyncio
+async def test_generate_distinguishes_missing_token_permission_from_gating() -> None:
+    """Regression guard: a real HF response observed in production —
+    '...does not have sufficient permissions to call Inference Providers...'
+    — also arrives as a 403, but the fix is enabling a token permission, not
+    accepting a model license. Telling the user to do the wrong one wastes a
+    round trip, so the two must not share a message."""
+    settings.HUGGINGFACE_API_KEY = "hf_fake_token"
+    error_text = (
+        "This authentication method does not have sufficient permissions to "
+        "call Inference Providers on behalf of user someuser"
+    )
+    response = SimpleNamespace(
+        status_code=403,
+        headers={"content-type": "application/json"},
+        json=lambda: {"error": error_text},
+        text=error_text,
+        content=b"",
+    )
+    service = ImageGenerationService()
+    with patch("httpx.AsyncClient", return_value=_mock_client(response)):
+        with pytest.raises(ImageGenerationError) as exc_info:
+            await service.generate("a cat", user_id=uuid.uuid4())
+
+    message = str(exc_info.value)
+    assert "permission" in message.lower()
+    assert "settings/tokens" in message
+    assert "gated" not in message.lower()
+    assert "licence" not in message.lower()
+
+
+@pytest.mark.asyncio
 async def test_generate_explains_invalid_api_key_401() -> None:
     settings.HUGGINGFACE_API_KEY = "hf_fake_token"
     response = SimpleNamespace(

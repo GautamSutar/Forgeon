@@ -37,13 +37,24 @@ async def test_browse_agents_returns_full_catalog(client: AsyncClient) -> None:
 
 async def test_agents_requiring_setup_declare_it_with_a_hint(client: AsyncClient) -> None:
     """Agents whose core capability needs an unconfigured provider must say so
-    up front rather than appearing usable and failing at call time."""
-    resp = await client.get("/api/v1/marketplace/agents")
-    by_slug = {a["slug"]: a for a in resp.json()}
+    up front rather than appearing usable and failing at call time.
 
-    for slug in ("image", "video", "mobile"):
-        assert by_slug[slug]["status"] == "requires_setup"
-        assert by_slug[slug]["setup_hint"]
+    Forces HUGGINGFACE_API_KEY off for the duration: the image agent's
+    status is computed from that setting (see test_marketplace endpoint),
+    so this must not depend on whatever happens to be in the developer's
+    real backend/.env — a locally-configured key would otherwise flip
+    "image" to live and silently break this assertion."""
+    original = settings.HUGGINGFACE_API_KEY
+    settings.HUGGINGFACE_API_KEY = ""
+    try:
+        resp = await client.get("/api/v1/marketplace/agents")
+        by_slug = {a["slug"]: a for a in resp.json()}
+
+        for slug in ("image", "video", "mobile"):
+            assert by_slug[slug]["status"] == "requires_setup"
+            assert by_slug[slug]["setup_hint"]
+    finally:
+        settings.HUGGINGFACE_API_KEY = original
 
     assert by_slug["job"]["status"] == "live"
 
@@ -100,19 +111,28 @@ async def test_image_agent_chat_generates_instead_of_conversing(client: AsyncCli
 
 
 async def test_image_agent_chat_surfaces_generation_failure_in_transcript(client: AsyncClient) -> None:
-    """When HUGGINGFACE_API_KEY isn't configured (the default in tests), the
-    failure must show up as an assistant reply the user can read — not a
-    500, and not a silently empty response."""
-    token = await _register_and_login(client, "image-agent-fail@test.com")
-    headers = {"Authorization": f"Bearer {token}"}
+    """When HUGGINGFACE_API_KEY isn't configured, the failure must show up as
+    an assistant reply the user can read — not a 500, and not a silently
+    empty response.
 
-    resp = await client.post(
-        "/api/v1/marketplace/agents/image/chat",
-        headers=headers,
-        json={"message": "a minimal coffee logo"},
-    )
-    assert resp.status_code == 200
-    assert "HUGGINGFACE_API_KEY" in resp.json()["message"]["content"]
+    Forced off explicitly rather than relying on it being unset by default:
+    a real key in the developer's backend/.env would otherwise make this
+    test attempt a genuine network call to Hugging Face."""
+    original = settings.HUGGINGFACE_API_KEY
+    settings.HUGGINGFACE_API_KEY = ""
+    try:
+        token = await _register_and_login(client, "image-agent-fail@test.com")
+        headers = {"Authorization": f"Bearer {token}"}
+
+        resp = await client.post(
+            "/api/v1/marketplace/agents/image/chat",
+            headers=headers,
+            json={"message": "a minimal coffee logo"},
+        )
+        assert resp.status_code == 200
+        assert "HUGGINGFACE_API_KEY" in resp.json()["message"]["content"]
+    finally:
+        settings.HUGGINGFACE_API_KEY = original
 
 
 async def test_unknown_agent_slug_404s(client: AsyncClient) -> None:

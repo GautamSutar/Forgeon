@@ -25,7 +25,12 @@ from app.core.config import settings
 
 logger = logging.getLogger("app.services.image_generation")
 
-HF_INFERENCE_BASE = "https://api-inference.huggingface.co/models"
+# Hugging Face retired the legacy api-inference.huggingface.co host in favor
+# of the Inference Providers router. The `hf-inference` provider segment
+# routes to HF's own first-party inference backend — the direct successor to
+# the old serverless Inference API — and keeps the same request/response
+# shape this service already relies on.
+HF_INFERENCE_BASE = "https://router.huggingface.co/hf-inference/models"
 
 
 class ImageGenerationError(Exception):
@@ -108,10 +113,22 @@ class ImageGenerationService:
         if response.status_code == 401:
             return "Hugging Face rejected the API key. Check HUGGINGFACE_API_KEY in backend/.env."
         if response.status_code == 403:
+            # A 403 here has two unrelated causes with near-identical HTTP
+            # shape, so branch on HF's actual error text rather than
+            # guessing — telling a user to accept a license they've already
+            # accepted (or vice versa) just burns another round trip.
+            if "permission" in body.lower() or "inference providers" in body.lower():
+                return (
+                    "Hugging Face rejected this token for Inference Providers: "
+                    f'"{body}". Fine-grained tokens need the "Make calls to '
+                    "Inference Providers\" permission enabled — edit the token at "
+                    "huggingface.co/settings/tokens (or create a new one with that "
+                    "permission checked) and update HUGGINGFACE_API_KEY."
+                )
             return (
                 f"Access to {self.model} is gated. Open "
                 f"huggingface.co/{self.model} while signed in as the token's "
-                "account and accept the licence, then try again."
+                f'account and accept the licence, then try again. ({body})'
             )
         if response.status_code == 404:
             return f"Model {self.model} was not found on Hugging Face. Check IMAGE_MODEL."
