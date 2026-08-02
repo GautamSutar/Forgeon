@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { marketplaceApi } from "@/api/endpoints";
 import type { ChatMessage } from "@/api/types";
 import { AgentIcon } from "@/components/AgentIcon";
+import { Markdown } from "@/components/Markdown";
 import { Badge, Button, ErrorBanner, Textarea } from "@/components/ui";
 import { PageLoader } from "@/components/PageLoader";
 import { describeError, useAsync } from "@/lib/useAsync";
@@ -224,13 +225,16 @@ function MessageBubble({ message, accent, icon }: { message: ChatMessage; accent
         )}
       </div>
       <div
-        className={`max-w-[75%] whitespace-pre-wrap rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+        className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
           isUser
-            ? "rounded-tr-sm bg-brand-600 text-white"
+            ? "whitespace-pre-wrap rounded-tr-sm bg-brand-600 text-white"
             : "rounded-tl-sm border border-line bg-surface text-fg"
         }`}
       >
-        {message.content}
+        {/* User turns are literal text the person typed — parsing them as
+            markdown would reformat their own words. Only agent replies,
+            which are authored in markdown, get rendered. */}
+        {isUser ? message.content : <Markdown content={message.content} />}
       </div>
     </div>
   );

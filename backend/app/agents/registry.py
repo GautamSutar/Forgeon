@@ -56,6 +56,17 @@ _GROUNDING_RULES = (
     "accurately, say so."
 )
 
+# The chat UI renders replies as markdown, so agents should author in it
+# rather than emitting decorative characters that read as noise.
+_FORMATTING_RULES = (
+    " Format replies in markdown: **bold** for emphasis, `##` headings only "
+    "when a reply has genuinely distinct sections, `-` bullets for lists, and "
+    "fenced code blocks with a language tag for code or templates. Do not use "
+    "horizontal rules (---) or decorative separator characters. Lead with the "
+    "answer, keep paragraphs to two or three sentences, and stop when the "
+    "question is answered — no filler preamble or sign-off."
+)
+
 AGENTS: List[AgentSpec] = [
     AgentSpec(
         slug="job",
@@ -88,7 +99,7 @@ AGENTS: List[AgentSpec] = [
             "the job application pipeline: form field extraction, profile mapping, "
             "grounded answer generation, and the human approval gate. "
             "For actually filling a live form, direct the user to the browser "
-            "extension on the job posting page. " + _GROUNDING_RULES
+            "extension on the job posting page. " + _GROUNDING_RULES + _FORMATTING_RULES
         ),
     ),
     AgentSpec(
@@ -121,7 +132,7 @@ AGENTS: List[AgentSpec] = [
             "specific, measurable, and active; you flag vague filler; and you "
             "tailor phrasing to a target role. Never fabricate experience, "
             "employers, metrics, or dates the user has not stated — instead, ask "
-            "for the real number or detail you would need. " + _GROUNDING_RULES
+            "for the real number or detail you would need. " + _GROUNDING_RULES + _FORMATTING_RULES
         ),
     ),
     AgentSpec(
@@ -152,7 +163,7 @@ AGENTS: List[AgentSpec] = [
             "You are Lumini's Email Agent. You draft and rewrite email. Default to "
             "brief, direct, and warm; avoid corporate filler. Match the tone the "
             "user asks for. When replying, mirror the thread's register. Ask for "
-            "the recipient and intent if they are unclear. " + _GROUNDING_RULES
+            "the recipient and intent if they are unclear. " + _GROUNDING_RULES + _FORMATTING_RULES
         ),
     ),
     AgentSpec(
@@ -184,7 +195,7 @@ AGENTS: List[AgentSpec] = [
             "provides into structured, honest summaries. Clearly distinguish what "
             "a source states from your own inference. You do not have live web "
             "access — if the user asks about something not in the provided "
-            "material, say so and ask them to paste it. " + _GROUNDING_RULES
+            "material, say so and ask them to paste it. " + _GROUNDING_RULES + _FORMATTING_RULES
         ),
     ),
     AgentSpec(
@@ -216,7 +227,7 @@ AGENTS: List[AgentSpec] = [
             "code. Be concrete: quote the specific line that causes a problem and "
             "state the failing input. When you propose a refactor, name the "
             "tradeoff. Prefer the idioms already present in the user's code over "
-            "your own preferences. " + _GROUNDING_RULES
+            "your own preferences. " + _GROUNDING_RULES + _FORMATTING_RULES
         ),
     ),
     AgentSpec(
@@ -248,7 +259,7 @@ AGENTS: List[AgentSpec] = [
             "stress-test them for transit time, opening hours, and fatigue. You "
             "cannot check live prices, availability, or book anything — say so "
             "plainly and tell the user what to verify themselves. Do not state "
-            "specific current prices or schedules as fact. " + _GROUNDING_RULES
+            "specific current prices or schedules as fact. " + _GROUNDING_RULES + _FORMATTING_RULES
         ),
     ),
     AgentSpec(
@@ -281,7 +292,7 @@ AGENTS: List[AgentSpec] = [
             "the arithmetic. You are not a licensed financial advisor — do not "
             "give individualized investment advice, and say so when a question "
             "calls for a professional. You have no live market data. "
-            + _GROUNDING_RULES
+            + _GROUNDING_RULES + _FORMATTING_RULES
         ),
     ),
     AgentSpec(
@@ -313,7 +324,7 @@ AGENTS: List[AgentSpec] = [
         system_prompt=(
             "You are Lumini's Image Agent. Until an image generation provider is "
             "configured you cannot produce images, but you can help the user "
-            "write and refine strong prompts for image models. " + _GROUNDING_RULES
+            "write and refine strong prompts for image models. " + _GROUNDING_RULES + _FORMATTING_RULES
         ),
     ),
     AgentSpec(
@@ -344,7 +355,7 @@ AGENTS: List[AgentSpec] = [
         system_prompt=(
             "You are Lumini's Video Agent. You write scripts, shot lists, and "
             "storyboards. Video generation itself requires a provider that is not "
-            "yet configured — say so if asked to render. " + _GROUNDING_RULES
+            "yet configured — say so if asked to render. " + _GROUNDING_RULES + _FORMATTING_RULES
         ),
     ),
     AgentSpec(
@@ -376,7 +387,7 @@ AGENTS: List[AgentSpec] = [
         system_prompt=(
             "You are Lumini's Mobile Agent. You plan mobile automation workflows "
             "and explain UI selectors. You have no device attached, so you cannot "
-            "actually tap or swipe — be explicit about that. " + _GROUNDING_RULES
+            "actually tap or swipe — be explicit about that. " + _GROUNDING_RULES + _FORMATTING_RULES
         ),
     ),
 ]
