@@ -98,7 +98,7 @@ class AgentChatService:
         service = ImageGenerationService()
         try:
             image = await service.generate(prompt, user_id=user_id)
-            content = f"![{prompt}]({image.url})\n\nGenerated with `{image.model}`."
+            content = f"![{prompt}]({image.url})"
         except ImageGenerationError as exc:
             # Surfaced as an assistant turn, so the failure stays visible in
             # the transcript instead of vanishing into a toast.

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { marketplaceApi } from "@/api/endpoints";
 import type { ChatMessage } from "@/api/types";
 import { AgentIcon } from "@/components/AgentIcon";
@@ -11,28 +11,50 @@ import { describeError, useAsync } from "@/lib/useAsync";
 export default function AgentChatPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const conversationParam = searchParams.get("c");
   const { data: agent, loading, error } = useAsync(() => marketplaceApi.getAgent(slug!), [slug]);
 
+  // DashboardLayout remounts this page whenever the path or ?c= changes (it
+  // keys the outlet on pathname+search), so these only need to seed once per
+  // mount rather than being reset by a slug-watching effect.
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [conversationId, setConversationId] = useState<string | undefined>();
+  const [conversationId, setConversationId] = useState<string | undefined>(conversationParam ?? undefined);
+  const [loadingConversation, setLoadingConversation] = useState(Boolean(conversationParam));
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
-  // Switching agents must not carry the previous agent's transcript over.
+  // Opened via the sidebar's history list or a shared link — load that
+  // conversation's transcript instead of starting blank.
   useEffect(() => {
-    setMessages([]);
-    setConversationId(undefined);
-    setDraft("");
-    setSendError(null);
-  }, [slug]);
+    if (!conversationParam) return;
+    let cancelled = false;
+    marketplaceApi
+      .getConversation(conversationParam)
+      .then((detail) => {
+        if (cancelled) return;
+        setMessages(detail.messages);
+        setConversationId(detail.id);
+      })
+      .catch(() => {
+        if (!cancelled) setSendError("Couldn't load that conversation.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingConversation(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, sending]);
 
-  if (loading) return <PageLoader label="Loading agent" />;
+  if (loading || loadingConversation) return <PageLoader label="Loading agent" />;
   if (error) return <ErrorBanner message={error} />;
   if (!agent) return null;
 
@@ -53,8 +75,20 @@ export default function AgentChatPage() {
 
     try {
       const response = await marketplaceApi.chat(agent!.slug, trimmed, conversationId);
+      const isNewConversation = !conversationId;
       setConversationId(response.conversation_id);
       setMessages((prev) => [...prev, response.message]);
+
+      // Reflect a newly-created conversation in the URL (so the sidebar can
+      // highlight it, and a refresh reopens the same thread) without adding
+      // a history entry per message.
+      if (isNewConversation) {
+        navigate(`/agents/${agent!.slug}?c=${response.conversation_id}`, { replace: true });
+      }
+      // Tells AgentSidebar to refetch this agent's conversation list — picks
+      // up both a brand-new conversation appearing and the title the backend
+      // sets from the first exchange.
+      window.dispatchEvent(new Event("lumini:conversations-changed"));
     } catch (err) {
       setSendError(describeError(err));
       // Roll the optimistic turn back out so the transcript doesn't show a

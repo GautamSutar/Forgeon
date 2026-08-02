@@ -11,8 +11,9 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useMatch, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/auth/AuthContext";
+import { AgentSidebar } from "@/components/AgentSidebar";
 import { LogoLockup, LogoMark } from "@/components/brand/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Kbd } from "@/components/ui";
@@ -48,6 +49,16 @@ function initials(name?: string | null, email?: string | null): string {
 export function DashboardLayout() {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  // Matches only an individual agent's page (/agents/:slug), not the
+  // marketplace list itself (/agents) — that keeps browsing the catalog on
+  // the generic nav and only swaps in agent-specific chrome once you've
+  // actually opened one.
+  const agentMatch = useMatch("/agents/:slug");
+  const agentSlug = agentMatch?.params.slug;
+  const activeConversationId = searchParams.get("c") ?? undefined;
+
   const [collapsed, setCollapsed] = useState(
     () => localStorage.getItem(STORAGE_KEY) === "true",
   );
@@ -55,6 +66,26 @@ export function DashboardLayout() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, String(collapsed));
   }, [collapsed]);
+
+  // The URL (?c=<conversationId>) is the single source of truth shared
+  // between this sidebar and AgentChatPage — they're siblings under the
+  // same route (this renders <Outlet/>, so it can't hold the page's state
+  // directly), and driving both off the URL means a refresh or a shared
+  // link reproduces the exact same view instead of just the sidebar or
+  // just the transcript.
+  function openConversation(id: string) {
+    if (!agentSlug) return;
+    navigate(`/agents/${agentSlug}?c=${id}`);
+  }
+
+  function startNewChat() {
+    if (!agentSlug) return;
+    navigate(`/agents/${agentSlug}`);
+  }
+
+  function handleConversationDeleted(deletedId: string) {
+    if (deletedId === activeConversationId) startNewChat();
+  }
 
   return (
     <div className="flex min-h-screen bg-bg">
@@ -71,79 +102,94 @@ export function DashboardLayout() {
           )}
         </div>
 
-        {/* Global search — opens the command palette rather than duplicating it. */}
-        <div className="px-3 pb-3">
-          <button
-            onClick={() => window.dispatchEvent(new Event("lumini:open-palette"))}
-            className={cn(
-              "flex w-full items-center gap-2 rounded-lg border border-line bg-surface px-2.5 py-2 text-sm text-fg-subtle transition-colors hover:border-line-strong hover:text-fg-muted",
-              collapsed && "justify-center px-0",
-            )}
-          >
-            <Search className="h-4 w-4 shrink-0" />
-            {!collapsed && (
-              <>
-                <span className="flex-1 text-left">Search…</span>
-                <span className="flex gap-0.5">
-                  <Kbd>⌘</Kbd>
-                  <Kbd>K</Kbd>
-                </span>
-              </>
-            )}
-          </button>
-        </div>
-
-        <nav className="flex-1 overflow-y-auto px-3">
-          {SECTIONS.map((section) => (
-            <div key={section.heading} className="mb-5">
-              <AnimatePresence initial={false}>
-                {!collapsed && (
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="mb-1.5 px-3 text-[0.65rem] font-semibold uppercase tracking-wider text-fg-subtle"
-                  >
-                    {section.heading}
-                  </motion.p>
+        {/* Collapsed, or browsing outside a specific agent: the generic
+            global nav. An agent open and expanded: that agent's own branding
+            + conversation history instead. */}
+        {agentSlug && !collapsed ? (
+          <AgentSidebar
+            key={agentSlug}
+            slug={agentSlug}
+            activeConversationId={activeConversationId}
+            onNewChat={startNewChat}
+            onSelectConversation={openConversation}
+            onConversationDeleted={handleConversationDeleted}
+          />
+        ) : (
+          <>
+            <div className="px-3 pb-3">
+              <button
+                onClick={() => window.dispatchEvent(new Event("lumini:open-palette"))}
+                className={cn(
+                  "flex w-full items-center gap-2 rounded-lg border border-line bg-surface px-2.5 py-2 text-sm text-fg-subtle transition-colors hover:border-line-strong hover:text-fg-muted",
+                  collapsed && "justify-center px-0",
                 )}
-              </AnimatePresence>
-              <ul className="flex flex-col gap-0.5">
-                {section.items.map((item) => (
-                  <li key={item.to}>
-                    <NavLink
-                      to={item.to}
-                      end={(item as { end?: boolean }).end}
-                      title={collapsed ? item.label : undefined}
-                      className={({ isActive }) =>
-                        cn(
-                          "group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                          collapsed && "justify-center px-0",
-                          isActive
-                            ? "bg-brand-500/15 text-brand-300"
-                            : "text-fg-muted hover:bg-surface-hover hover:text-fg",
-                        )
-                      }
-                    >
-                      {({ isActive }) => (
-                        <>
-                          {isActive && (
-                            <motion.span
-                              layoutId="nav-active"
-                              className="absolute -left-3 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-brand-400"
-                            />
-                          )}
-                          <item.icon className="h-[18px] w-[18px] shrink-0" />
-                          {!collapsed && <span className="truncate">{item.label}</span>}
-                        </>
-                      )}
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
+              >
+                <Search className="h-4 w-4 shrink-0" />
+                {!collapsed && (
+                  <>
+                    <span className="flex-1 text-left">Search…</span>
+                    <span className="flex gap-0.5">
+                      <Kbd>⌘</Kbd>
+                      <Kbd>K</Kbd>
+                    </span>
+                  </>
+                )}
+              </button>
             </div>
-          ))}
-        </nav>
+
+            <nav className="flex-1 overflow-y-auto px-3">
+              {SECTIONS.map((section) => (
+                <div key={section.heading} className="mb-5">
+                  <AnimatePresence initial={false}>
+                    {!collapsed && (
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="mb-1.5 px-3 text-[0.65rem] font-semibold uppercase tracking-wider text-fg-subtle"
+                      >
+                        {section.heading}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                  <ul className="flex flex-col gap-0.5">
+                    {section.items.map((item) => (
+                      <li key={item.to}>
+                        <NavLink
+                          to={item.to}
+                          end={(item as { end?: boolean }).end}
+                          title={collapsed ? item.label : undefined}
+                          className={({ isActive }) =>
+                            cn(
+                              "group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                              collapsed && "justify-center px-0",
+                              isActive
+                                ? "bg-brand-500/15 text-brand-300"
+                                : "text-fg-muted hover:bg-surface-hover hover:text-fg",
+                            )
+                          }
+                        >
+                          {({ isActive }) => (
+                            <>
+                              {isActive && (
+                                <motion.span
+                                  layoutId="nav-active"
+                                  className="absolute -left-3 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-brand-400"
+                                />
+                              )}
+                              <item.icon className="h-[18px] w-[18px] shrink-0" />
+                              {!collapsed && <span className="truncate">{item.label}</span>}
+                            </>
+                          )}
+                        </NavLink>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </nav>
+          </>
+        )}
 
         <div className="border-t border-line p-3">
           <div className={cn("flex items-center gap-2.5 rounded-lg px-1 py-1.5", collapsed && "justify-center")}>
@@ -182,7 +228,7 @@ export function DashboardLayout() {
       <main className="min-w-0 flex-1">
         <AnimatePresence mode="wait">
           <motion.div
-            key={location.pathname}
+            key={location.pathname + location.search}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}

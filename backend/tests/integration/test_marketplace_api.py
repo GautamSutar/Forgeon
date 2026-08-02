@@ -100,7 +100,9 @@ async def test_image_agent_chat_generates_instead_of_conversing(client: AsyncCli
     body = resp.json()
     assert body["message"]["role"] == "assistant"
     assert "fake-file.png" in body["message"]["content"]
-    assert "black-forest-labs/FLUX.1-dev" in body["message"]["content"]
+    # The reply is just the markdown image — no "Generated with <model>"
+    # caption line cluttering the transcript.
+    assert body["message"]["content"] == "![a minimal coffee logo](/api/v1/images/fake-user/fake-file.png)"
 
     detail = await client.get(
         f"/api/v1/marketplace/conversations/{body['conversation_id']}", headers=headers
