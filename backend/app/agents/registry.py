@@ -303,16 +303,15 @@ AGENTS: List[AgentSpec] = [
         tags=["Generation","Design","FLUX"],
         tagline="Turn a prompt into an image",
         description=(
-            "Generates an image from your prompt using black-forest-labs/FLUX.1-schnell "
-            "via the Hugging Face Inference API. Every message is treated as a "
-            "prompt — send a new message to generate a new image."
+            "Turns a written description into an image. Every message is treated "
+            "as a new prompt — send another message to generate another image."
         ),
         category="Creative",
         icon="image",
         accent="#ec4899",
         capabilities=[
-            "Generates images from a text prompt with FLUX.1-schnell",
-            "Runs on the Hugging Face Inference API",
+            "Generates images from a text prompt",
+            "Treats each message as a fresh prompt",
             "Serves each generation back as a downloadable image",
         ],
         example_prompts=[
