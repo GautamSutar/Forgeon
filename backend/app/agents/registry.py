@@ -301,7 +301,7 @@ AGENTS: List[AgentSpec] = [
         rating=4.3,
         installs=8890,
         tags=["Generation","Design","FLUX"],
-        tagline="Generate images with FLUX.1-schnell",
+        tagline="Turn a prompt into an image",
         description=(
             "Generates an image from your prompt using black-forest-labs/FLUX.1-schnell "
             "via the Hugging Face Inference API. Every message is treated as a "
