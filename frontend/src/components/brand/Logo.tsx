@@ -1,17 +1,22 @@
 /**
- * LUMINAI brand mark — a vector recreation of the logo: a nested "L" with a
- * neural-graph motif on the upper arm, in the deep-blue -> cyan gradient.
+ * FORGEON brand mark — an angular monogram with a neural-graph motif on the
+ * upper arm, in the deep-blue -> cyan gradient.
  *
- * Rebuilt as SVG rather than shipping the source PNG so it stays crisp at any
- * size and costs no image request. To use the original raster instead, drop it
- * at `frontend/public/logo.png` and swap <LogoMark> for an <img>.
+ * NOTE: this SVG's geometry was originally drawn as a stylized "L" for the
+ * product's previous name (LuminAI). It still reads fine as an abstract
+ * angular mark, but it is not literally an "F" — redraw the path data below
+ * (or commission new brand art) if an F-monogram is wanted here.
+ *
+ * Built as inline SVG rather than shipping a raster so it stays crisp at any
+ * size and costs no image request. To use raster art instead, drop it at
+ * `frontend/public/logo.png` and swap <LogoMark> for an <img>.
  *
  * `id` is required: SVG gradient IDs are document-global, so two marks sharing
  * an ID would make the second inherit the first's gradient.
  */
-export function LogoMark({ className = "h-8 w-8", id = "luminai" }: { className?: string; id?: string }) {
-  const gid = `luminai-grad-${id}`;
-  const glow = `luminai-glow-${id}`;
+export function LogoMark({ className = "h-8 w-8", id = "forgeon" }: { className?: string; id?: string }) {
+  const gid = `forgeon-grad-${id}`;
+  const glow = `forgeon-glow-${id}`;
 
   return (
     <svg viewBox="0 0 120 140" className={className} fill="none" aria-hidden="true">
@@ -31,7 +36,7 @@ export function LogoMark({ className = "h-8 w-8", id = "luminai" }: { className?
       </defs>
 
       <g stroke={`url(#${gid})`} fill="none" strokeWidth="5.5" strokeLinejoin="round" strokeLinecap="round">
-        {/* Outer L */}
+        {/* Outer angular frame */}
         <path d="M26 46 L26 126 L100 126 L100 110 L44 110 L44 46 Z" />
         {/* Inner stem */}
         <path d="M56 34 L56 96 L88 96" opacity="0.95" />
@@ -71,7 +76,7 @@ export function LogoLockup({
     <div className={`flex items-center gap-2.5 ${className}`}>
       <LogoMark className={markClassName} id={id} />
       <div className="leading-tight">
-        <p className="text-sm font-bold tracking-[0.2em] text-fg">LUMINAI</p>
+        <p className="text-sm font-bold tracking-[0.2em] text-fg">FORGEON</p>
         {tagline && <p className="mt-0.5 text-[0.7rem] tracking-normal text-fg-subtle">{tagline}</p>}
       </div>
     </div>

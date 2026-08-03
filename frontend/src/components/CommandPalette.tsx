@@ -55,10 +55,10 @@ export function CommandPalette() {
     };
     const onOpen = () => setOpen(true);
     window.addEventListener("keydown", onKey);
-    window.addEventListener("luminai:open-palette", onOpen);
+    window.addEventListener("forgeon:open-palette", onOpen);
     return () => {
       window.removeEventListener("keydown", onKey);
-      window.removeEventListener("luminai:open-palette", onOpen);
+      window.removeEventListener("forgeon:open-palette", onOpen);
     };
   }, []);
 
@@ -231,7 +231,7 @@ export function CommandPalette() {
                     <Kbd>↑</Kbd><Kbd>↓</Kbd> navigate <Kbd>↵</Kbd> select
                   </span>
                   <span className="flex items-center gap-1.5">
-                    LuminAI <ArrowRight className="h-3 w-3" /> Command
+                    Forgeon <ArrowRight className="h-3 w-3" /> Command
                   </span>
                 </div>
               </motion.div>

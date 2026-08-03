@@ -1,6 +1,6 @@
 <div align="center">
 
-# ✨ LuminAI
+# ✨ Forgeon
 
 **A multi-agent AI platform — ten specialized agents for the work you actually do, in one dark, fast dashboard.**
 
@@ -17,7 +17,7 @@
 
 ## What this is
 
-LuminAI is a marketplace of specialized AI agents. Browse the catalog, open an
+Forgeon is a marketplace of specialized AI agents. Browse the catalog, open an
 agent, and start working — each one carries its own role, capabilities, and
 honest limits.
 

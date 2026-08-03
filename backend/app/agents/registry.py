@@ -1,4 +1,4 @@
-"""LuminAI agent marketplace catalog.
+"""Forgeon agent marketplace catalog.
 
 Agents are code, not user data, so the catalog lives here as a static
 registry rather than a database table — adding an agent means shipping its
@@ -40,7 +40,7 @@ class AgentSpec:
     # telemetry — nothing currently counts installs or collects reviews.
     # They exist so the marketplace UI has realistic listing data to render.
     # Wire them to real aggregates before presenting them as actual metrics.
-    creator: str = "LuminAI"
+    creator: str = "Forgeon"
     version: str = "1.0.0"
     rating: float = 0.0
     installs: int = 0
@@ -95,7 +95,7 @@ AGENTS: List[AgentSpec] = [
         ],
         route="/agent-run",
         system_prompt=(
-            "You are LuminAI's Job Agent. You help the user understand and operate "
+            "You are Forgeon's Job Agent. You help the user understand and operate "
             "the job application pipeline: form field extraction, profile mapping, "
             "grounded answer generation, and the human approval gate. "
             "For actually filling a live form, direct the user to the browser "
@@ -128,7 +128,7 @@ AGENTS: List[AgentSpec] = [
         ],
         route="/resumes",
         system_prompt=(
-            "You are LuminAI's Resume Agent. You improve resumes: you make bullets "
+            "You are Forgeon's Resume Agent. You improve resumes: you make bullets "
             "specific, measurable, and active; you flag vague filler; and you "
             "tailor phrasing to a target role. Never fabricate experience, "
             "employers, metrics, or dates the user has not stated — instead, ask "
@@ -160,7 +160,7 @@ AGENTS: List[AgentSpec] = [
             "Make this reply warmer but still brief.",
         ],
         system_prompt=(
-            "You are LuminAI's Email Agent. You draft and rewrite email. Default to "
+            "You are Forgeon's Email Agent. You draft and rewrite email. Default to "
             "brief, direct, and warm; avoid corporate filler. Match the tone the "
             "user asks for. When replying, mirror the thread's register. Ask for "
             "the recipient and intent if they are unclear. " + _GROUNDING_RULES + _FORMATTING_RULES
@@ -191,7 +191,7 @@ AGENTS: List[AgentSpec] = [
             "Turn these notes into a one-page brief.",
         ],
         system_prompt=(
-            "You are LuminAI's Research Agent. You synthesize material the user "
+            "You are Forgeon's Research Agent. You synthesize material the user "
             "provides into structured, honest summaries. Clearly distinguish what "
             "a source states from your own inference. You do not have live web "
             "access — if the user asks about something not in the provided "
@@ -223,7 +223,7 @@ AGENTS: List[AgentSpec] = [
             "Write tests covering the edge cases here.",
         ],
         system_prompt=(
-            "You are LuminAI's Coding Agent. You explain, review, and refactor "
+            "You are Forgeon's Coding Agent. You explain, review, and refactor "
             "code. Be concrete: quote the specific line that causes a problem and "
             "state the failing input. When you propose a refactor, name the "
             "tradeoff. Prefer the idioms already present in the user's code over "
@@ -255,7 +255,7 @@ AGENTS: List[AgentSpec] = [
             "Is this itinerary too packed for one day?",
         ],
         system_prompt=(
-            "You are LuminAI's Travel Agent. You build realistic itineraries and "
+            "You are Forgeon's Travel Agent. You build realistic itineraries and "
             "stress-test them for transit time, opening hours, and fatigue. You "
             "cannot check live prices, availability, or book anything — say so "
             "plainly and tell the user what to verify themselves. Do not state "
@@ -287,7 +287,7 @@ AGENTS: List[AgentSpec] = [
             "Explain index funds without the jargon.",
         ],
         system_prompt=(
-            "You are LuminAI's Finance Agent. You do budgeting math and explain "
+            "You are Forgeon's Finance Agent. You do budgeting math and explain "
             "financial concepts clearly. Always state your assumptions and show "
             "the arithmetic. You are not a licensed financial advisor — do not "
             "give individualized investment advice, and say so when a question "
@@ -334,7 +334,7 @@ AGENTS: List[AgentSpec] = [
         # prompt here means "render this," not "answer this." Kept accurate
         # anyway in case anything ever reads it directly.
         system_prompt=(
-            "You are LuminAI's Image Agent. You generate images with FLUX.1-schnell "
+            "You are Forgeon's Image Agent. You generate images with FLUX.1-schnell "
             "from the user's prompt via the Hugging Face Inference API. "
             + _GROUNDING_RULES + _FORMATTING_RULES
         ),
@@ -365,7 +365,7 @@ AGENTS: List[AgentSpec] = [
             "backend/.env. Scripting and storyboarding work without it."
         ),
         system_prompt=(
-            "You are LuminAI's Video Agent. You write scripts, shot lists, and "
+            "You are Forgeon's Video Agent. You write scripts, shot lists, and "
             "storyboards. Video generation itself requires a provider that is not "
             "yet configured — say so if asked to render. " + _GROUNDING_RULES + _FORMATTING_RULES
         ),
@@ -397,7 +397,7 @@ AGENTS: List[AgentSpec] = [
             "a device attached."
         ),
         system_prompt=(
-            "You are LuminAI's Mobile Agent. You plan mobile automation workflows "
+            "You are Forgeon's Mobile Agent. You plan mobile automation workflows "
             "and explain UI selectors. You have no device attached, so you cannot "
             "actually tap or swipe — be explicit about that. " + _GROUNDING_RULES + _FORMATTING_RULES
         ),

@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     )
 
     # App
-    APP_NAME: str = "LuminAI"
+    APP_NAME: str = "Forgeon"
     ENVIRONMENT: str = "development"
     DEBUG: bool = False
     API_V1_PREFIX: str = "/api/v1"

@@ -88,7 +88,7 @@ export default function AgentChatPage() {
       // Tells AgentSidebar to refetch this agent's conversation list — picks
       // up both a brand-new conversation appearing and the title the backend
       // sets from the first exchange.
-      window.dispatchEvent(new Event("luminai:conversations-changed"));
+      window.dispatchEvent(new Event("forgeon:conversations-changed"));
     } catch (err) {
       setSendError(describeError(err));
       // Roll the optimistic turn back out so the transcript doesn't show a

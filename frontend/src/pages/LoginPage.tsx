@@ -37,7 +37,7 @@ export default function LoginPage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L20 12l-4.714 2.143L13 21l-2.286-6.857L6 12l4.714-2.143L13 3z" />
             </svg>
           </div>
-          <p className="text-sm font-medium text-fg-subtle">LuminAI — AI Agent Marketplace</p>
+          <p className="text-sm font-medium text-fg-subtle">Forgeon — AI Agent Marketplace</p>
         </div>
 
         <Card className="shadow-card-hover">
