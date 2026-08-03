@@ -1,8 +1,8 @@
 <div align="center">
 
-# ✨ Lumini
+# ✨ LuminAI
 
-**An AI agent marketplace — ten specialized agents for the work you actually do, in one dark, fast dashboard.**
+**A multi-agent AI platform — ten specialized agents for the work you actually do, in one dark, fast dashboard.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](backend/pyproject.toml)
@@ -17,7 +17,7 @@
 
 ## What this is
 
-Lumini is a marketplace of specialized AI agents. Browse the catalog, open an
+LuminAI is a marketplace of specialized AI agents. Browse the catalog, open an
 agent, and start working — each one carries its own role, capabilities, and
 honest limits.
 

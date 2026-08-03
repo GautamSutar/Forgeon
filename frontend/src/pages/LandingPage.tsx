@@ -75,9 +75,9 @@ export default function LandingPage() {
             transition={{ ...fadeUp.transition, delay: 0.05 }}
             className="mx-auto max-w-4xl text-4xl font-extrabold leading-[1.08] tracking-tight text-fg sm:text-6xl"
           >
-            The AI agent
+            The multi-agent
             <br />
-            <span className="text-gradient">operating system</span>
+            <span className="text-gradient">AI platform</span>
           </motion.h1>
 
           <motion.p
@@ -124,7 +124,7 @@ export default function LandingPage() {
                 <span className="h-2.5 w-2.5 rounded-full bg-red-500/70" />
                 <span className="h-2.5 w-2.5 rounded-full bg-amber-500/70" />
                 <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/70" />
-                <span className="ml-3 font-mono text-[0.7rem] text-fg-subtle">lumini · workspace</span>
+                <span className="ml-3 font-mono text-[0.7rem] text-fg-subtle">luminai · workspace</span>
               </div>
               <div className="bg-surface p-6 text-left">
                 <p className="mb-4 text-[0.7rem] font-semibold uppercase tracking-wider text-fg-subtle">
@@ -269,7 +269,7 @@ export default function LandingPage() {
         <motion.div {...fadeUp} className="mb-12 text-center">
           <h2 className="text-3xl font-bold tracking-tight text-fg">Pricing</h2>
           <p className="mx-auto mt-3 max-w-lg text-sm text-fg-muted">
-            Self-hosted and free while Lumini is in development. Bring your own model key.
+            Self-hosted and free while LuminAI is in development. Bring your own model key.
           </p>
         </motion.div>
         <div className="mx-auto grid max-w-4xl gap-4 md:grid-cols-3">
@@ -354,7 +354,7 @@ export default function LandingPage() {
             ))}
           </div>
           <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6">
-            <p className="text-xs text-fg-subtle">© {new Date().getFullYear()} Lumini. MIT licensed.</p>
+            <p className="text-xs text-fg-subtle">© {new Date().getFullYear()} LuminAI. MIT licensed.</p>
             <a
               href="https://github.com"
               target="_blank"

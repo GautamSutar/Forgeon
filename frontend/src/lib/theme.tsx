@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 
 export type Theme = "dark" | "light" | "system";
 
-const STORAGE_KEY = "lumini-theme";
+const STORAGE_KEY = "luminai-theme";
 
 interface ThemeContextValue {
   theme: Theme;

@@ -54,10 +54,10 @@ export function AgentSidebar({
     // both a brand-new conversation appearing and the title the backend
     // sets from the first exchange, neither of which this component would
     // otherwise know happened.
-    window.addEventListener("lumini:conversations-changed", fetchList);
+    window.addEventListener("luminai:conversations-changed", fetchList);
     return () => {
       cancelled = true;
-      window.removeEventListener("lumini:conversations-changed", fetchList);
+      window.removeEventListener("luminai:conversations-changed", fetchList);
     };
   }, [slug]);
 

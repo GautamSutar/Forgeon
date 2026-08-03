@@ -1,6 +1,6 @@
-# Lumini Design System
+# LuminAI Design System
 
-The visual and interaction language for Lumini — a premium, dark-first AI agent
+The visual and interaction language for LuminAI — a premium, dark-first AI agent
 operating system. Reference for anyone building UI in this repo.
 
 Design peers: Google AI Studio, Linear, Vercel, Raycast, Cursor.
@@ -227,7 +227,7 @@ agents · Workflow · Capabilities · Tech · Pricing · CTA · Footer.
 │         The AI agent OPERATING SYSTEM       │
 │          [Start building] [Browse]          │
 │    ┌──────────────────────────────────┐     │
-│    │ ○○○  lumini · workspace          │     │
+│    │ ○○○  luminai · workspace          │     │
 │    │  ①─②─③─④─⑤─⑥─⑦  (animated)      │     │
 │    └──────────────────────────────────┘     │
 └────────────────────────────────────────────┘
@@ -283,7 +283,7 @@ agents · Workflow · Capabilities · Tech · Pricing · CTA · Footer.
 ## 7. Suggested Figma structure
 
 ```
-Lumini Design System (Figma)
+LuminAI Design System (Figma)
 ├── 📄 00 · Cover
 ├── 📄 01 · Foundations
 │   ├── Color — semantic tokens (Dark/Light variable modes)

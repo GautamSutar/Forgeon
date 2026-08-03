@@ -36,7 +36,7 @@ const SECTIONS = [
   { heading: "Account", items: [{ to: "/profile", label: "Profile", icon: User }] },
 ];
 
-const STORAGE_KEY = "lumini-sidebar-collapsed";
+const STORAGE_KEY = "luminai-sidebar-collapsed";
 
 function initials(name?: string | null, email?: string | null): string {
   if (name?.trim()) {
@@ -118,7 +118,7 @@ export function DashboardLayout() {
           <>
             <div className="px-3 pb-3">
               <button
-                onClick={() => window.dispatchEvent(new Event("lumini:open-palette"))}
+                onClick={() => window.dispatchEvent(new Event("luminai:open-palette"))}
                 className={cn(
                   "flex w-full items-center gap-2 rounded-lg border border-line bg-surface px-2.5 py-2 text-sm text-fg-subtle transition-colors hover:border-line-strong hover:text-fg-muted",
                   collapsed && "justify-center px-0",

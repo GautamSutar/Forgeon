@@ -1,4 +1,4 @@
-"""Lumini agent marketplace: browse agents and chat with them."""
+"""LuminAI agent marketplace: browse agents and chat with them."""
 from __future__ import annotations
 
 import uuid

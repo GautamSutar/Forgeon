@@ -9,9 +9,9 @@
  * `id` is required: SVG gradient IDs are document-global, so two marks sharing
  * an ID would make the second inherit the first's gradient.
  */
-export function LogoMark({ className = "h-8 w-8", id = "lumini" }: { className?: string; id?: string }) {
-  const gid = `lumini-grad-${id}`;
-  const glow = `lumini-glow-${id}`;
+export function LogoMark({ className = "h-8 w-8", id = "luminai" }: { className?: string; id?: string }) {
+  const gid = `luminai-grad-${id}`;
+  const glow = `luminai-glow-${id}`;
 
   return (
     <svg viewBox="0 0 120 140" className={className} fill="none" aria-hidden="true">

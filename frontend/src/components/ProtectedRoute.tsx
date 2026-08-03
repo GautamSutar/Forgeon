@@ -8,7 +8,7 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
 
   // Fullscreen: this runs before the dashboard shell exists, so there is no
   // content area to center inside yet.
-  if (loading) return <PageLoader fullscreen label="Starting Lumini" />;
+  if (loading) return <PageLoader fullscreen label="Starting LuminAI" />;
   if (!user) return <Navigate to="/login" replace />;
   return <>{children}</>;
 }
