@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Download, Search, Star } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { marketplaceApi } from "@/api/endpoints";
 import type { AgentCard as AgentCardType } from "@/api/types";
 import { AgentIcon } from "@/components/AgentIcon";
@@ -13,8 +13,16 @@ import { useAsync } from "@/lib/useAsync";
 export default function MarketplacePage() {
   const { data: agents, loading, error } = useAsync(() => marketplaceApi.listAgents());
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<string | null>(null);
   const navigate = useNavigate();
+  // URL-driven (?category=) rather than local state, so MarketplaceSidebar —
+  // a sibling under the same layout, not a parent/child of this page — can
+  // read and set it too without lifting state through a shared ancestor.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const category = searchParams.get("category");
+
+  function setCategory(next: string | null) {
+    setSearchParams(next ? { category: next } : {}, { replace: true });
+  }
 
   const categories = useMemo(
     () => (agents ? Array.from(new Set(agents.map((a) => a.category))) : []),
@@ -25,7 +33,12 @@ export default function MarketplacePage() {
     if (!agents) return [];
     const q = query.trim().toLowerCase();
     return agents.filter((a) => {
-      if (category && a.category !== category) return false;
+      // A typed search searches every agent, not just the currently
+      // selected category — combining both as a strict AND meant typing
+      // into the box while a narrow category was active (e.g. "Productivity",
+      // 1 agent) silently returned nothing unless that one agent happened to
+      // match the query, which read as "search is broken."
+      if (!q && category && a.category !== category) return false;
       if (!q) return true;
       return `${a.name} ${a.tagline} ${a.category} ${a.tags.join(" ")} ${a.capabilities.join(" ")}`
         .toLowerCase()

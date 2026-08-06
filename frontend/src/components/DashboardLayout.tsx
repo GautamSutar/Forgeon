@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   Bookmark,
   FileText,
-  LayoutGrid,
+  Home,
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
@@ -14,16 +14,13 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useMatch, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/auth/AuthContext";
 import { AgentSidebar } from "@/components/AgentSidebar";
+import { MarketplaceSidebar } from "@/components/MarketplaceSidebar";
 import { LogoLockup, LogoMark } from "@/components/brand/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Kbd } from "@/components/ui";
 import { cn } from "@/lib/cn";
 
 const SECTIONS = [
-  {
-    heading: "Discover",
-    items: [{ to: "/agents", label: "Marketplace", icon: LayoutGrid, end: true }],
-  },
   {
     heading: "Workspace",
     items: [
@@ -58,6 +55,10 @@ export function DashboardLayout() {
   const agentMatch = useMatch("/agents/:slug");
   const agentSlug = agentMatch?.params.slug;
   const activeConversationId = searchParams.get("c") ?? undefined;
+  // Exact match only — /agents itself, not /agents/:slug (that's agentMatch,
+  // handled separately above).
+  const onMarketplaceList = Boolean(useMatch({ path: "/agents", end: true }));
+  const activeCategory = searchParams.get("category");
 
   const [collapsed, setCollapsed] = useState(
     () => localStorage.getItem(STORAGE_KEY) === "true",
@@ -87,6 +88,12 @@ export function DashboardLayout() {
     if (deletedId === activeConversationId) startNewChat();
   }
 
+  function selectCategory(category: string | null) {
+    const next = new URLSearchParams();
+    if (category) next.set("category", category);
+    navigate({ pathname: "/agents", search: next.toString() });
+  }
+
   return (
     <div className="flex min-h-screen bg-bg">
       <motion.aside
@@ -102,9 +109,32 @@ export function DashboardLayout() {
           )}
         </div>
 
-        {/* Collapsed, or browsing outside a specific agent: the generic
-            global nav. An agent open and expanded: that agent's own branding
-            + conversation history instead. */}
+        {/* Persistent regardless of mode (agent chat / marketplace browse /
+            generic nav) — an escape hatch back to the marketplace so opening
+            an agent or filtering by category never strands you. */}
+        <div className="px-3 pb-2">
+          <NavLink
+            to="/agents"
+            end
+            title={collapsed ? "Home" : undefined}
+            className={({ isActive }) =>
+              cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                collapsed && "justify-center px-0",
+                isActive
+                  ? "bg-brand-500/15 text-brand-300"
+                  : "text-fg-muted hover:bg-surface-hover hover:text-fg",
+              )
+            }
+          >
+            <Home className="h-[18px] w-[18px] shrink-0" />
+            {!collapsed && "Home"}
+          </NavLink>
+        </div>
+
+        {/* Collapsed: always the generic icon-only nav. Otherwise: an open
+            agent gets its own branding + history; the marketplace list gets
+            category browsing; anywhere else gets the generic workspace nav. */}
         {agentSlug && !collapsed ? (
           <AgentSidebar
             key={agentSlug}
@@ -114,6 +144,8 @@ export function DashboardLayout() {
             onSelectConversation={openConversation}
             onConversationDeleted={handleConversationDeleted}
           />
+        ) : onMarketplaceList && !collapsed ? (
+          <MarketplaceSidebar activeCategory={activeCategory} onSelectCategory={selectCategory} />
         ) : (
           <>
             <div className="px-3 pb-3">
