@@ -250,20 +250,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Tech showcase */}
-      <section className="border-y border-line bg-bg-elevated/50">
-        <div className="mx-auto max-w-6xl px-6 py-16">
-          <motion.p {...fadeUp} className="mb-8 text-center text-xs font-semibold uppercase tracking-wider text-fg-subtle">
-            Built on
-          </motion.p>
-          <motion.div {...fadeUp} className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-sm font-medium text-fg-subtle">
-            {["FastAPI", "LangGraph", "PostgreSQL + pgvector", "React", "TypeScript", "Tailwind", "Playwright", "LiteLLM"].map((t) => (
-              <span key={t} className="transition-colors hover:text-fg-muted">{t}</span>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
       {/* Pricing */}
       <section id="pricing" className="mx-auto max-w-6xl px-6 py-24">
         <motion.div {...fadeUp} className="mb-12 text-center">
