@@ -110,11 +110,11 @@ export function DashboardLayout() {
         </div>
 
         {/* Persistent regardless of mode (agent chat / marketplace browse /
-            generic nav) — an escape hatch back to the marketplace so opening
-            an agent or filtering by category never strands you. */}
+            generic nav) — an escape hatch back to the public landing page so
+            opening an agent or filtering by category never strands you. */}
         <div className="px-3 pb-2">
           <NavLink
-            to="/agents"
+            to="/"
             end
             title={collapsed ? "Home" : undefined}
             className={({ isActive }) =>
